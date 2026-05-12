@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Калькулятор ІМТ та ШКФ для пацієнтів з ампутаціями</title>
+    <style>
+        * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; }
+        body { background: #eef2f7; margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; border-radius: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); padding: 24px 28px; }
+        h1 { font-size: 1.8rem; margin-top: 0; color: #1a3e60; }
+        .sub { color: #2c6e9e; border-left: 4px solid #2c6e9e; padding-left: 16px; margin-bottom: 28px; font-weight: 500; }
+        .grid-2 { display: flex; flex-wrap: wrap; gap: 24px; }
+        .panel { flex: 1; min-width: 280px; background: #f9fbfd; border-radius: 20px; padding: 18px 20px; border: 1px solid #e2edf2; }
+        .panel h2 { font-size: 1.4rem; margin-top: 0; color: #1f5e8c; border-bottom: 2px solid #cbdde6; padding-bottom: 8px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; color: #1f3b4a; }
+        input, select { width: 100%; padding: 10px 12px; border: 1px solid #bdd3e0; border-radius: 14px; font-size: 1rem; }
+        input:focus { border-color: #2c6e9e; outline: none; box-shadow: 0 0 0 3px rgba(44,110,158,0.2); }
+        .radio-group { display: flex; gap: 20px; align-items: center; }
+        .radio-group label { display: inline-flex; align-items: center; gap: 6px; font-weight: normal; margin-bottom: 0; }
+        .amputation-section { background: #ffffff; border-radius: 20px; padding: 12px 16px; margin-top: 12px; border: 1px solid #e0eef5; }
+        .limb-row { margin-bottom: 18px; border-bottom: 1px dashed #cce0ea; padding-bottom: 12px; }
+        .limb-title { font-weight: 700; margin: 8px 0 8px 0; color: #1f5e8c; font-size: 1.1rem; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 5px; }
+        .checkbox-group label { font-weight: normal; display: inline-flex; align-items: center; gap: 5px; background: #f0f4f9; padding: 5px 12px; border-radius: 40px; cursor: pointer; }
+        .checkbox-group input { width: auto; margin-right: 4px; transform: scale(1.05); }
+        .total-loss { background: #e5f0f9; padding: 8px 12px; border-radius: 40px; font-size: 0.9rem; text-align: center; margin-top: 12px; }
+        button { background: #1f6e43; color: white; border: none; padding: 14px 20px; font-size: 1.1rem; font-weight: bold; border-radius: 40px; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
+        button:hover { background: #0f5a38; }
+        .btn-secondary { background: #5f7f9a; margin-top: 8px; }
+        .btn-secondary:hover { background: #3f5e78; }
+        .results { background: #eef4fa; border-radius: 24px; padding: 20px; margin-top: 28px; border-left: 6px solid #1f6e43; display: none; }
+        .result-item { display: flex; justify-content: space-between; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid #caddf0; }
+        .result-label { font-weight: 600; color: #1a3e60; }
+        .result-value { font-family: monospace; font-weight: 700; }
+        .warning { background: #fff3e0; border-left: 5px solid #e67e22; padding: 12px; border-radius: 16px; margin-top: 18px; font-size: 0.85rem; }
+        footer { font-size: 0.75rem; text-align: center; margin-top: 28px; color: #5f7f9a; }
+        @media (max-width: 700px) { .container { padding: 16px; } .checkbox-group label { padding: 4px 10px; font-size: 0.85rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🩺 Калькулятор ІМТ та ШКФ</h1>
+    <div class="sub">Для пацієнтів з ампутаціями кінцівок (корекція за Osterkamp, 1995)</div>
+
+    <div class="grid-2">
+        <!-- ЛІВА ПАНЕЛЬ: основні дані -->
+        <div class="panel">
+            <h2>📋 Основні дані</h2>
+            <div class="form-group">
+                <label>Стать</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="sex" value="male" checked> Чоловік</label>
+                    <label><input type="radio" name="sex" value="female"> Жінка</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Вік (роки)</label>
+                <input type="number" id="age" value="25" step="1" min="18" max="120">
+            </div>
+            <div class="form-group">
+                <label>Зріст (см)</label>
+                <input type="number" id="height" value="186" step="0.5" min="100" max="250">
+            </div>
+            <div class="form-group">
+                <label>Поточна вага (кг) * зважена з протезами/без</label>
+                <input type="number" id="weight" value="46" step="0.5" min="20" max="300">
+            </div>
+            <div class="form-group">
+                <label>Креатинін сироватки (мкмоль/л)</label>
+                <input type="number" id="creatinine" value="90" step="1" min="20" max="1000">
+            </div>
+        </div>
+
+        <!-- ПРАВА ПАНЕЛЬ: ампутації (ЧЕКБОКСИ) -->
+        <div class="panel">
+            <h2>🦿 Ампутовані сегменти</h2>
+            <div class="amputation-section">
+                <!-- Ліва нога -->
+                <div class="limb-row">
+                    <div class="limb-title">🦵 Ліва нога</div>
+                    <div class="checkbox-group" id="left-leg-group">
+                        <label><input type="checkbox" class="amp-cb" data-limb="left_leg" data-segment="foot"> Стопа</label>
+                        <label><input type="checkbox" class="amp-cb" data-limb="left_leg" data-segment="calf"> Гомілка (без стопи)</label>
+                        <label><input type="checkbox" class="amp-cb" data-limb="left_leg" data-segment="thigh"> Стегно (без гомілки/стопи)</label>
+                        <label><input type="checkbox" class="amp-cb" data-limb="left_leg" data-segment="wholeleg"> Вся нога ⚡</label>
+                    </div>
+                </div>
+                <!-- Права нога -->
+                <div class="limb-row">
+                    <div class="limb-title">🦵 Права нога</div>
+                    <div class="checkbox-group" id="right-leg-group">
+                        <label><input type="checkbox" class="amp-cb" data-limb="right_leg" data-segment="foot"> Стопа</label>
+                        <label><input type="checkbox" class="amp-cb" data-limb="right_leg" data-segment="calf"> Гомілка (без стопи)</label>
+                        <label><input type="checkbox" class="amp-cb" data-limb="right_leg" data-segment="thigh"> Стегно (без гомілки/стопи)</label>
+                        <label><input type="checkbox" class="amp-cb" data-limb="right_leg" data-segment="wholeleg"> Вся нога ⚡</label>
+                    </div>
+                </div>
+                <!-- Ліва рука -->
+                <div class="limb-row">
+                    <div class="limb-title">💪 Ліва рука</div>
+                    <div class="checkbox-group" id="left-arm-group">
+                        <label><input type="checkbox" class="amp-cb" data-limb="left_arm" data-segment="hand"> Кисть</label>
+                        <label><input type="checkbox" class="amp-cb" data-limb="left_arm" data-segment="forearm"> Передпліччя + кисть</label>
+                        <label><input type="checkbox" class="amp-cb" data-limb="left_arm" data-segment="upperarm"> Плече (без передпліччя)</label>
+                        <label><input type="checkbox" class="amp-cb" data-limb="left_arm" data-segment="wholearm"> Вся рука ⚡</label>
+                    </div>
+                </div>
+                <!-- Права рука -->
+                <div class="limb-row">
+                    <div class="limb-title">💪 Права рука</div>
+                    <div class="checkbox-group" id="right-arm-group">
+                        <label><input type="checkbox" class="amp-cb" data-limb="right_arm" data-segment="hand"> Кисть</label>
+                        <label><input type="checkbox" class="amp-cb" data-limb="right_arm" data-segment="forearm"> Передпліччя + кисть</label>
+                        <label><input type="checkbox" class="amp-cb" data-limb="right_arm" data-segment="upperarm"> Плече (без передпліччя)</label>
+                        <label><input type="checkbox" class="amp-cb" data-limb="right_arm" data-segment="wholearm"> Вся рука ⚡</label>
+                    </div>
+                </div>
+            </div>
+            <div id="totalLossDisplay" class="total-loss">📉 Сумарна втрата маси: 0.0%</div>
+            <button type="button" id="clearAmputationsBtn" class="btn-secondary">🗑 Скинути всі ампутації</button>
+        </div>
+    </div>
+
+    <button id="calcBtn">📊 Розрахувати ІМТ та ШКФ</button>
+
+    <div id="resultsArea" class="results">
+        <h3 style="margin-top:0">🧾 Результати (з корекцією)</h3>
+        <div id="resultContent"></div>
+        <div class="warning" id="warningMsg"></div>
+    </div>
+    <footer>
+        ⚕️ Методика: скоригована маса тіла (Osterkamp, 1995), ІМТ = маса(кг)/зріст²(м),<br>
+        ШКФ (кліренс креатиніну) за Коккрофтом-Голтом із використанням скоригованої маси. Не застосовувати при ГНН, анасарці, віці <18 років.<br>
+        ✅ Позначайте ампутації чекбоксами. Якщо кінцівка ціла – просто залиште всі чекбокси порожніми.
+    </footer>
+</div>
+
+<script>
+    // ---------- КОЕФІЦІЄНТИ ВТРАТИ МАСИ ----------
+    const lossMap = {
+        foot: 0.015,
+        calf: 0.044,
+        thigh: 0.101,
+        wholeleg: 0.160,
+        hand: 0.007,
+        forearm: 0.023,
+        upperarm: 0.027,
+        wholearm: 0.050
+    };
+
+    // Обчислення сумарної втрати з урахуванням пріоритету "вся кінцівка"
+    function computeTotalLoss() {
+        const limbs = {
+            left_leg: [], right_leg: [], left_arm: [], right_arm: []
+        };
+        const checkboxes = document.querySelectorAll('.amp-cb:checked');
+        checkboxes.forEach(cb => {
+            const limb = cb.getAttribute('data-limb');
+            const seg = cb.getAttribute('data-segment');
+            if (limb && seg) limbs[limb].push(seg);
+        });
+        let total = 0;
+        for (const [limb, segs] of Object.entries(limbs)) {
+            if (segs.includes('wholeleg')) {
+                total += lossMap['wholeleg'];
+            } else if (segs.includes('wholearm')) {
+                total += lossMap['wholearm'];
+            } else {
+                for (let s of segs) {
+                    total += lossMap[s] || 0;
+                }
+            }
+        }
+        return total;
+    }
+
+    // Оновлення відображення відсотка втрати
+    function updateTotalLossDisplay() {
+        let loss = computeTotalLoss();
+        let percent = (loss * 100).toFixed(2);
+        document.getElementById('totalLossDisplay').innerHTML = `📉 Сумарна втрата маси: ${percent}%`;
+        if (loss >= 1) {
+            document.getElementById('totalLossDisplay').style.background = "#f8d7da";
+            document.getElementById('totalLossDisplay').style.color = "#721c24";
+        } else {
+            document.getElementById('totalLossDisplay').style.background = "#e5f0f9";
+            document.getElementById('totalLossDisplay').style.color = "#1a3e60";
+        }
+    }
+
+    // Логіка "вся кінцівка" вимикає інші чекбокси в тій самій групі
+    function setupExclusiveLogic() {
+        const groups = [
+            { container: '#left-leg-group', whole: 'wholeleg', others: ['foot','calf','thigh'] },
+            { container: '#right-leg-group', whole: 'wholeleg', others: ['foot','calf','thigh'] },
+            { container: '#left-arm-group', whole: 'wholearm', others: ['hand','forearm','upperarm'] },
+            { container: '#right-arm-group', whole: 'wholearm', others: ['hand','forearm','upperarm'] }
+        ];
+        groups.forEach(group => {
+            const container = document.querySelector(group.container);
+            if (!container) return;
+            const wholeCheck = container.querySelector(`input[data-segment="${group.whole}"]`);
+            const otherChecks = group.others.map(seg => container.querySelector(`input[data-segment="${seg}"]`)).filter(c => c);
+            if (wholeCheck) {
+                wholeCheck.addEventListener('change', function(e) {
+                    if (this.checked) {
+                        otherChecks.forEach(ch => { if(ch) ch.checked = false; });
+                    }
+                    updateTotalLossDisplay();
+                });
+                otherChecks.forEach(ch => {
+                    if(ch) ch.addEventListener('change', function() {
+                        if (this.checked && wholeCheck.checked) wholeCheck.checked = false;
+                        updateTotalLossDisplay();
+                    });
+                });
+            }
+        });
+    }
+
+    // Скидання всіх чекбоксів ампутацій
+    function clearAllAmputations() {
+        const allCheckboxes = document.querySelectorAll('.amp-cb');
+        allCheckboxes.forEach(cb => cb.checked = false);
+        updateTotalLossDisplay();
+    }
+
+    // Основний розрахунок
+    function calculate() {
+        const sex = document.querySelector('input[name="sex"]:checked').value;
+        const age = parseFloat(document.getElementById('age').value);
+        const heightCm = parseFloat(document.getElementById('height').value);
+        const currentWeight = parseFloat(document.getElementById('weight').value);
+        const creatinine = parseFloat(document.getElementById('creatinine').value);
+
+        if (isNaN(age) || age < 18) { alert("Вік має бути ≥ 18 років (метод не для дітей)"); return; }
+        if (isNaN(heightCm) || heightCm < 100) { alert("Введіть коректний зріст (≥100 см)"); return; }
+        if (isNaN(currentWeight) || currentWeight <= 0) { alert("Введіть поточну вагу"); return; }
+        if (isNaN(creatinine) || creatinine <= 0) { alert("Введіть рівень креатиніну >0"); return; }
+
+        const totalLoss = computeTotalLoss();
+        if (totalLoss >= 1) {
+            alert("Сумарна частка втрати маси перевищує 100% – неможливо. Перевірте вибір ампутацій.");
+            return;
+        }
+
+        // Скоригована маса
+        const adjustedWeight = currentWeight / (1 - totalLoss);
+        const heightM = heightCm / 100;
+        const bmi = adjustedWeight / (heightM * heightM);
+        let bmiCat = "";
+        if (bmi < 18.5) bmiCat = "Недостатня маса";
+        else if (bmi < 25) bmiCat = "Норма";
+        else if (bmi < 30) bmiCat = "Надлишкова маса";
+        else bmiCat = "Ожиріння";
+
+        // ШКФ (Cockcroft-Gault)
+        let crCl;
+        if (sex === 'male') crCl = ((140 - age) * adjustedWeight * 1.23) / creatinine;
+        else crCl = ((140 - age) * adjustedWeight * 1.04) / creatinine;
+        crCl = Math.max(0, crCl);
+
+        let stage = "";
+        if (crCl >= 90) stage = "≥90 – норма або 1 стадія ХНН";
+        else if (crCl >= 60) stage = "60-89 – 2 стадія (незначне зниження)";
+        else if (crCl >= 45) stage = "45-59 – 3a стадія (помірне)";
+        else if (crCl >= 30) stage = "30-44 – 3b стадія (помірне)";
+        else if (crCl >= 15) stage = "15-29 – 4 стадія (тяжке)";
+        else stage = "<15 – 5 стадія (термінальна)";
+
+        const resultHtml = `
+            <div class="result-item"><span class="result-label">Скоригована маса тіла (без ампутацій):</span><span class="result-value">${adjustedWeight.toFixed(1)} кг</span></div>
+            <div class="result-item"><span class="result-label">Індекс маси тіла (ІМТ):</span><span class="result-value">${bmi.toFixed(1)} кг/м² — ${bmiCat}</span></div>
+            <div class="result-item"><span class="result-label">ШКФ (Cockcroft-Gault) з корекцією ваги:</span><span class="result-value">${crCl.toFixed(1)} мл/хв</span></div>
+            <div class="result-item"><span class="result-label">Стадія ХНН (KDIGO):</span><span class="result-value">${stage}</span></div>
+            <div class="result-item"><span class="result-label">Сумарний дефіцит маси тіла (втрата):</span><span class="result-value">${(totalLoss*100).toFixed(2)}%</span></div>
+        `;
+        let warningText = totalLoss > 0.2 ? "⚠️ Високий відсоток втрати маси – розрахунок має додаткову похибку. Для точної оцінки ШКФ рекомендується аналіз на цистатин С." : "ℹ️ Розрахунок базований на середньостатистичних коефіцієнтах (Osterkamp). Індивідуальні особливості можуть впливати на точність.";
+        document.getElementById('resultContent').innerHTML = resultHtml;
+        document.getElementById('warningMsg').innerHTML = warningText;
+        document.getElementById('resultsArea').style.display = "block";
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Прив'язка подій до всіх чекбоксів
+        const allCbs = document.querySelectorAll('.amp-cb');
+        allCbs.forEach(cb => cb.addEventListener('change', updateTotalLossDisplay));
+        setupExclusiveLogic();
+        updateTotalLossDisplay();
+        document.getElementById('calcBtn').addEventListener('click', calculate);
+        document.getElementById('clearAmputationsBtn').addEventListener('click', clearAllAmputations);
+    });
+</script>
+</body>
+</html>
