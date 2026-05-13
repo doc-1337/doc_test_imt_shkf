@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>PATRIOT – калькулятор для ампутантів</title>
-    <meta name="description" content="Калькулятор ІМТ, площі тіла та ШКФ для пацієнтів з ампутаціями кінцівок. Методика проєкту PATRIOT (Українська військово-медична академія).">
+    <meta name="description" content="Калькулятор ІМТ, площі тіла та ШКФ для пацієнтів з ампутаціями кінцівок (третини). Модифікований метод Osterkamp (2026). Розробники: Ігор Стельмащук та ШІ.">
     <style>
         * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; }
         body { background: #eef2f7; margin: 0; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); padding: 24px 28px; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); padding: 24px 28px; }
         h1 { font-size: 1.8rem; margin-top: 0; color: #1a3e60; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .badge { background: #1a3e60; color: white; font-size: 0.7rem; padding: 4px 12px; border-radius: 40px; vertical-align: middle; }
+        .badge { background: #1a3e60; color: white; font-size: 0.7rem; padding: 4px 12px; border-radius: 40px; }
         .sub { color: #2c6e9e; border-left: 4px solid #2c6e9e; padding-left: 16px; margin-bottom: 28px; font-weight: 500; }
         .grid-2 { display: flex; flex-wrap: wrap; gap: 24px; }
-        .panel { flex: 1; min-width: 300px; background: #f9fbfd; border-radius: 20px; padding: 18px 20px; border: 1px solid #e2edf2; }
+        .panel { flex: 1; min-width: 380px; background: #f9fbfd; border-radius: 20px; padding: 18px 20px; border: 1px solid #e2edf2; }
         .panel h2 { font-size: 1.3rem; margin-top: 0; color: #1f5e8c; border-bottom: 2px solid #cbdde6; padding-bottom: 8px; }
         .form-group { margin-bottom: 16px; }
         label { display: block; font-weight: 600; margin-bottom: 6px; color: #1f3b4a; }
@@ -21,12 +21,13 @@
         input:focus { border-color: #2c6e9e; outline: none; box-shadow: 0 0 0 3px rgba(44,110,158,0.2); }
         .radio-group { display: flex; gap: 20px; align-items: center; }
         .radio-group label { display: inline-flex; align-items: center; gap: 6px; font-weight: normal; margin-bottom: 0; }
-        .amputation-section { background: #ffffff; border-radius: 20px; padding: 12px 16px; margin-top: 12px; border: 1px solid #e0eef5; }
-        .limb-row { margin-bottom: 18px; border-bottom: 1px dashed #cce0ea; padding-bottom: 12px; }
-        .limb-title { font-weight: 700; margin: 8px 0 8px 0; color: #1f5e8c; font-size: 1rem; }
-        .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 5px; }
-        .checkbox-group label { font-weight: normal; display: inline-flex; align-items: center; gap: 5px; background: #f0f4f9; padding: 4px 10px; border-radius: 40px; cursor: pointer; font-size: 0.85rem; }
-        .checkbox-group input { width: auto; margin-right: 4px; transform: scale(1.05); }
+        .amputation-section { background: #ffffff; border-radius: 20px; padding: 12px 16px; margin-top: 12px; border: 1px solid #e0eef5; max-height: 600px; overflow-y: auto; }
+        .limb-row { margin-bottom: 20px; border-bottom: 1px dashed #cce0ea; padding-bottom: 15px; }
+        .limb-title { font-weight: 700; margin: 8px 0 10px 0; color: #1f5e8c; font-size: 1rem; }
+        .radio-option-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 5px; }
+        .radio-option-group label { font-weight: normal; display: inline-flex; align-items: center; gap: 5px; background: #f0f4f9; padding: 5px 10px; border-radius: 40px; cursor: pointer; font-size: 0.75rem; margin-bottom: 0; }
+        .radio-option-group input { width: auto; margin-right: 4px; transform: scale(1.05); }
+        .limb-note { font-size: 0.65rem; color: #5f7f9a; margin-top: 5px; font-style: italic; }
         .total-loss { background: #e5f0f9; padding: 8px 12px; border-radius: 40px; font-size: 0.9rem; text-align: center; margin-top: 12px; }
         button { background: #1f6e43; color: white; border: none; padding: 14px 20px; font-size: 1.1rem; font-weight: bold; border-radius: 40px; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
         button:hover { background: #0f5a38; }
@@ -39,16 +40,16 @@
         .warning { background: #fff3e0; border-left: 5px solid #e67e22; padding: 12px; border-radius: 16px; margin-top: 18px; font-size: 0.85rem; }
         .info { background: #e8f4f8; border-left: 5px solid #2c6e9e; padding: 12px; border-radius: 16px; margin-top: 12px; font-size: 0.85rem; }
         footer { font-size: 0.7rem; text-align: center; margin-top: 28px; color: #5f7f9a; border-top: 1px solid #e0eef5; padding-top: 16px; }
-        @media (max-width: 750px) { .container { padding: 16px; } .checkbox-group label { padding: 3px 8px; font-size: 0.75rem; } }
+        .developer { margin-top: 12px; font-size: 0.75rem; color: #2c6e9e; text-align: center; }
+        @media (max-width: 850px) { .container { padding: 16px; } .radio-option-group label { padding: 3px 6px; font-size: 0.7rem; } }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🩺 PATRIOT <span class="badge">проєкт</span></h1>
+    <h1>🩺 PATRIOT</h1>
     <div class="sub">Калькулятор для пацієнтів з ампутаціями кінцівок (Українська військово-медична академія, 2025)</div>
 
     <div class="grid-2">
-        <!-- ЛІВА ПАНЕЛЬ: основні дані -->
         <div class="panel">
             <h2>📋 Основні дані</h2>
             <div class="form-group">
@@ -77,49 +78,74 @@
             </div>
         </div>
 
-        <!-- ПРАВА ПАНЕЛЬ: ампутації -->
         <div class="panel">
             <h2>🦿 Ампутовані сегменти</h2>
             <div class="amputation-section">
+                <!-- Ліва нога -->
                 <div class="limb-row">
                     <div class="limb-title">🦵 Ліва нога</div>
-                    <div class="checkbox-group" id="left-leg-group">
-                        <label><input type="checkbox" class="amp-cb" data-limb="left_leg" data-segment="foot" data-mass="0.015"> Стопа (1.5%)</label>
-                        <label><input type="checkbox" class="amp-cb" data-limb="left_leg" data-segment="calf" data-mass="0.044"> Гомілка (4.4%)</label>
-                        <label><input type="checkbox" class="amp-cb" data-limb="left_leg" data-segment="thigh" data-mass="0.101"> Стегно (10.1%)</label>
-                        <label><input type="checkbox" class="amp-cb" data-limb="left_leg" data-segment="wholeleg" data-mass="0.160"> Вся нога (16.0%)</label>
+                    <div class="radio-option-group" id="left-leg-group">
+                        <label><input type="radio" name="left_leg" value="none" checked> Ціла</label>
+                        <label><input type="radio" name="left_leg" value="0.015"> Стопа (1.5%)</label>
+                        <label><input type="radio" name="left_leg" value="0.027"> Гомілка (нижня 1/3, 2.7%)</label>
+                        <label><input type="radio" name="left_leg" value="0.042"> Гомілка (середня 1/3, 4.2%)</label>
+                        <label><input type="radio" name="left_leg" value="0.059"> Гомілка (верхня 1/3, 5.9%)</label>
+                        <label><input type="radio" name="left_leg" value="0.087"> Стегно (нижня 1/3, 8.7%)</label>
+                        <label><input type="radio" name="left_leg" value="0.120"> Стегно (середня 1/3, 12.0%)</label>
+                        <label><input type="radio" name="left_leg" value="0.148"> Стегно (верхня 1/3, 14.8%)</label>
+                        <label><input type="radio" name="left_leg" value="0.160"> Вся нога (16.0%)</label>
                     </div>
+                    <div class="limb-note">⚠️ Верхня третина стегна = 14.8% (кукса залишається)</div>
                 </div>
+                <!-- Права нога -->
                 <div class="limb-row">
                     <div class="limb-title">🦵 Права нога</div>
-                    <div class="checkbox-group" id="right-leg-group">
-                        <label><input type="checkbox" class="amp-cb" data-limb="right_leg" data-segment="foot" data-mass="0.015"> Стопа (1.5%)</label>
-                        <label><input type="checkbox" class="amp-cb" data-limb="right_leg" data-segment="calf" data-mass="0.044"> Гомілка (4.4%)</label>
-                        <label><input type="checkbox" class="amp-cb" data-limb="right_leg" data-segment="thigh" data-mass="0.101"> Стегно (10.1%)</label>
-                        <label><input type="checkbox" class="amp-cb" data-limb="right_leg" data-segment="wholeleg" data-mass="0.160"> Вся нога (16.0%)</label>
+                    <div class="radio-option-group" id="right-leg-group">
+                        <label><input type="radio" name="right_leg" value="none" checked> Ціла</label>
+                        <label><input type="radio" name="right_leg" value="0.015"> Стопа (1.5%)</label>
+                        <label><input type="radio" name="right_leg" value="0.027"> Гомілка (нижня 1/3, 2.7%)</label>
+                        <label><input type="radio" name="right_leg" value="0.042"> Гомілка (середня 1/3, 4.2%)</label>
+                        <label><input type="radio" name="right_leg" value="0.059"> Гомілка (верхня 1/3, 5.9%)</label>
+                        <label><input type="radio" name="right_leg" value="0.087"> Стегно (нижня 1/3, 8.7%)</label>
+                        <label><input type="radio" name="right_leg" value="0.120"> Стегно (середня 1/3, 12.0%)</label>
+                        <label><input type="radio" name="right_leg" value="0.148"> Стегно (верхня 1/3, 14.8%)</label>
+                        <label><input type="radio" name="right_leg" value="0.160"> Вся нога (16.0%)</label>
                     </div>
                 </div>
+                <!-- Ліва рука -->
                 <div class="limb-row">
                     <div class="limb-title">💪 Ліва рука</div>
-                    <div class="checkbox-group" id="left-arm-group">
-                        <label><input type="checkbox" class="amp-cb" data-limb="left_arm" data-segment="hand" data-mass="0.007"> Кисть (0.7%)</label>
-                        <label><input type="checkbox" class="amp-cb" data-limb="left_arm" data-segment="forearm" data-mass="0.023"> Передпліччя (2.3%)</label>
-                        <label><input type="checkbox" class="amp-cb" data-limb="left_arm" data-segment="upperarm" data-mass="0.027"> Плече (2.7%)</label>
-                        <label><input type="checkbox" class="amp-cb" data-limb="left_arm" data-segment="wholearm" data-mass="0.050"> Вся рука (5.0%)</label>
+                    <div class="radio-option-group" id="left-arm-group">
+                        <label><input type="radio" name="left_arm" value="none" checked> Ціла</label>
+                        <label><input type="radio" name="left_arm" value="0.007"> Кисть (0.7%)</label>
+                        <label><input type="radio" name="left_arm" value="0.011"> Передпліччя (нижня 1/3, 1.1%)</label>
+                        <label><input type="radio" name="left_arm" value="0.019"> Передпліччя (середня 1/3, 1.9%)</label>
+                        <label><input type="radio" name="left_arm" value="0.030"> Передпліччя (верхня 1/3, 3.0%)</label>
+                        <label><input type="radio" name="left_arm" value="0.037"> Плече (нижня 1/3, 3.7%)</label>
+                        <label><input type="radio" name="left_arm" value="0.045"> Плече (середня 1/3, 4.5%)</label>
+                        <label><input type="radio" name="left_arm" value="0.048"> Плече (верхня 1/3, 4.8%)</label>
+                        <label><input type="radio" name="left_arm" value="0.050"> Вся рука (5.0%)</label>
                     </div>
+                    <div class="limb-note">⚠️ Верхня третина плеча = 4.8% (кукса залишається)</div>
                 </div>
+                <!-- Права рука -->
                 <div class="limb-row">
                     <div class="limb-title">💪 Права рука</div>
-                    <div class="checkbox-group" id="right-arm-group">
-                        <label><input type="checkbox" class="amp-cb" data-limb="right_arm" data-segment="hand" data-mass="0.007"> Кисть (0.7%)</label>
-                        <label><input type="checkbox" class="amp-cb" data-limb="right_arm" data-segment="forearm" data-mass="0.023"> Передпліччя (2.3%)</label>
-                        <label><input type="checkbox" class="amp-cb" data-limb="right_arm" data-segment="upperarm" data-mass="0.027"> Плече (2.7%)</label>
-                        <label><input type="checkbox" class="amp-cb" data-limb="right_arm" data-segment="wholearm" data-mass="0.050"> Вся рука (5.0%)</label>
+                    <div class="radio-option-group" id="right-arm-group">
+                        <label><input type="radio" name="right_arm" value="none" checked> Ціла</label>
+                        <label><input type="radio" name="right_arm" value="0.007"> Кисть (0.7%)</label>
+                        <label><input type="radio" name="right_arm" value="0.011"> Передпліччя (нижня 1/3, 1.1%)</label>
+                        <label><input type="radio" name="right_arm" value="0.019"> Передпліччя (середня 1/3, 1.9%)</label>
+                        <label><input type="radio" name="right_arm" value="0.030"> Передпліччя (верхня 1/3, 3.0%)</label>
+                        <label><input type="radio" name="right_arm" value="0.037"> Плече (нижня 1/3, 3.7%)</label>
+                        <label><input type="radio" name="right_arm" value="0.045"> Плече (середня 1/3, 4.5%)</label>
+                        <label><input type="radio" name="right_arm" value="0.048"> Плече (верхня 1/3, 4.8%)</label>
+                        <label><input type="radio" name="right_arm" value="0.050"> Вся рука (5.0%)</label>
                     </div>
                 </div>
             </div>
             <div id="totalLossDisplay" class="total-loss">📉 Сумарна втрата маси: 0.0%</div>
-            <button type="button" id="clearAmputationsBtn" class="btn-secondary">🗑 Скинути всі ампутації</button>
+            <button type="button" id="clearAmputationsBtn" class="btn-secondary">🗑 Скинути всі ампутації (всі "Ціла")</button>
         </div>
     </div>
 
@@ -129,86 +155,56 @@
         <h3 style="margin-top:0">🧾 Результати (згідно з методикою PATRIOT)</h3>
         <div id="resultContent"></div>
         <div class="warning" id="warningMsg"></div>
-        <div class="info" id="infoMsg">
+        <div class="info">
             ℹ️ Методика описана у статті: Сидорова Н.М. та ін. "Невирішені питання ведення лікарем терапевтичного профілю пацієнта після ампутації кінцівок..." (2025)<br>
-            ▶ Коригований креатинін = креатинін + (втрачена маса в кг × 1.67 мкмоль/л)
+            ▶ Коригований креатинін = креатинін + (втрачена маса в кг × 1.67 мкмоль/л)<br>
+            ▶ Кожен вищий рівень ампутації включає всі нижчі (кумулятивні відсотки)<br>
+            ▶ Вибір лише одного варіанту на кінцівку для уникнення плутанини
         </div>
     </div>
     <footer>
         ⚕️ Джерело: проєкт PATRIOT, НВМКЦ «ГВКГ», Українська військово-медична академія (2024–2025).<br>
-        Коефіцієнти втрати маси тіла – за Osterkamp (1995). Коригування креатиніну – за Sydorova et al. (2025).
+        Коефіцієнти втрати маси тіла (кумулятивні) – унікальна модифікація Osterkamp-Stelmashchuk (2026) з розподілом на третини <br>
+        Коригування креатиніну – за Sydorova et al. (2025).
+        <div class="developer">
+            👨‍💻 Розробник: <strong>Ihor Stelmashchuk (doc_1337)</strong>
+            📧 smart47785@gmail.com
+        </div>
     </footer>
 </div>
 
 <script>
-    // ---------- КОЕФІЦІЄНТИ ВТРАТИ МАСИ (Osterkamp, 1995) ----------
-    const lossMap = {
-        foot: 0.015,
-        calf: 0.044,
-        thigh: 0.101,
-        wholeleg: 0.160,
-        hand: 0.007,
-        forearm: 0.023,
-        upperarm: 0.027,
-        wholearm: 0.050
-    };
-
-    // Отримання сумарної втрати з урахуванням пріоритету "вся кінцівка"
     function computeTotalLoss() {
-        const limbs = { left_leg: [], right_leg: [], left_arm: [], right_arm: [] };
-        const checkboxes = document.querySelectorAll('.amp-cb:checked');
-        checkboxes.forEach(cb => {
-            const limb = cb.getAttribute('data-limb');
-            const seg = cb.getAttribute('data-segment');
-            if (limb && seg) limbs[limb].push(seg);
-        });
         let total = 0;
-        for (const [limb, segs] of Object.entries(limbs)) {
-            if (segs.includes('wholeleg')) {
-                total += lossMap['wholeleg'];
-            } else if (segs.includes('wholearm')) {
-                total += lossMap['wholearm'];
-            } else {
-                for (let s of segs) total += lossMap[s] || 0;
+        const limbs = ['left_leg', 'right_leg', 'left_arm', 'right_arm'];
+        for (let limb of limbs) {
+            const selected = document.querySelector(`input[name="${limb}"]:checked`);
+            if (selected && selected.value !== 'none') {
+                total += parseFloat(selected.value);
             }
         }
-        return total;
+        return Math.min(total, 0.95);
     }
 
-    // Обчислення втраченої маси в кг (для корекції креатиніну)
     function computeLostMassKg(currentWeight, totalLossFraction) {
-        if (totalLossFraction >= 1) return 0;
-        // Втрачена маса = скоригована маса - поточна маса
-        // Скоригована маса = currentWeight / (1 - totalLossFraction)
+        if (totalLossFraction >= 0.95) return currentWeight * 10;
         const adjustedWeight = currentWeight / (1 - totalLossFraction);
         return adjustedWeight - currentWeight;
     }
 
-    // Формула Дюбуа для площі тіла (м²)
     function bodySurfaceArea(weightKg, heightCm) {
         return 0.007184 * Math.pow(weightKg, 0.425) * Math.pow(heightCm, 0.725);
     }
 
-    // CKD-EPI 2021 (без расового коефіцієнта) для ШКФ
     function ckdEpi2021(sex, age, creatinineUmoll) {
         const creatinineMgdl = creatinineUmoll / 88.4;
-        let scr = creatinineMgdl;
         let kappa, alpha;
-        
-        if (sex === 'female') {
-            kappa = 0.7;
-            alpha = -0.241;
-        } else {
-            kappa = 0.9;
-            alpha = -0.302;
-        }
-        
-        let minPart = Math.min(scr / kappa, 1);
-        let maxPart = Math.max(scr / kappa, 1);
-        
+        if (sex === 'female') { kappa = 0.7; alpha = -0.241; }
+        else { kappa = 0.9; alpha = -0.302; }
+        let minPart = Math.min(creatinineMgdl / kappa, 1);
+        let maxPart = Math.max(creatinineMgdl / kappa, 1);
         let egfr = 142 * Math.pow(minPart, alpha) * Math.pow(maxPart, -1.200) * Math.pow(0.9938, age);
         if (sex === 'female') egfr *= 1.012;
-        
         return egfr;
     }
 
@@ -216,7 +212,7 @@
         let loss = computeTotalLoss();
         let percent = (loss * 100).toFixed(2);
         document.getElementById('totalLossDisplay').innerHTML = `📉 Сумарна втрата маси: ${percent}%`;
-        if (loss >= 1) {
+        if (loss >= 0.5) {
             document.getElementById('totalLossDisplay').style.background = "#f8d7da";
             document.getElementById('totalLossDisplay').style.color = "#721c24";
         } else {
@@ -225,35 +221,12 @@
         }
     }
 
-    function setupExclusiveLogic() {
-        const groups = [
-            { container: '#left-leg-group', whole: 'wholeleg', others: ['foot','calf','thigh'] },
-            { container: '#right-leg-group', whole: 'wholeleg', others: ['foot','calf','thigh'] },
-            { container: '#left-arm-group', whole: 'wholearm', others: ['hand','forearm','upperarm'] },
-            { container: '#right-arm-group', whole: 'wholearm', others: ['hand','forearm','upperarm'] }
-        ];
-        groups.forEach(group => {
-            const container = document.querySelector(group.container);
-            if (!container) return;
-            const wholeCheck = container.querySelector(`input[data-segment="${group.whole}"]`);
-            const otherChecks = group.others.map(seg => container.querySelector(`input[data-segment="${seg}"]`)).filter(c => c);
-            if (wholeCheck) {
-                wholeCheck.addEventListener('change', function() {
-                    if (this.checked) otherChecks.forEach(ch => { if(ch) ch.checked = false; });
-                    updateTotalLossDisplay();
-                });
-                otherChecks.forEach(ch => {
-                    if(ch) ch.addEventListener('change', function() {
-                        if (this.checked && wholeCheck.checked) wholeCheck.checked = false;
-                        updateTotalLossDisplay();
-                    });
-                });
-            }
-        });
-    }
-
     function clearAllAmputations() {
-        document.querySelectorAll('.amp-cb').forEach(cb => cb.checked = false);
+        const limbs = ['left_leg', 'right_leg', 'left_arm', 'right_arm'];
+        for (let limb of limbs) {
+            const noneRadio = document.querySelector(`input[name="${limb}"][value="none"]`);
+            if (noneRadio) noneRadio.checked = true;
+        }
         updateTotalLossDisplay();
     }
 
@@ -270,15 +243,12 @@
         if (isNaN(creatinine) || creatinine <= 0) { alert("Введіть рівень креатиніну"); return; }
 
         const totalLoss = computeTotalLoss();
-        if (totalLoss >= 1) {
-            alert("Сумарна частка втрати маси перевищує 100%");
+        if (totalLoss >= 0.95) {
+            alert("Сумарна частка втрати маси перевищує 95% – перевірте вибір ампутацій");
             return;
         }
 
-        // 1. Скоригована маса тіла (якби без ампутації)
         const adjustedWeight = currentWeight / (1 - totalLoss);
-        
-        // 2. ІМТ скоригований
         const heightM = heightCm / 100;
         const bmi = adjustedWeight / (heightM * heightM);
         let bmiCat = "";
@@ -289,16 +259,10 @@
         else if (bmi < 40) bmiCat = "Ожиріння ІІ ступеня";
         else bmiCat = "Ожиріння ІІІ ступеня";
 
-        // 3. Втрачена маса в кг (для корекції креатиніну)
         const lostMassKg = computeLostMassKg(currentWeight, totalLoss);
-        
-        // 4. Коригований креатинін (за методикою Sydorova et al., 2025: +1.67 мкмоль/л на 1 кг втраченої маси)
         const adjustedCreatinine = creatinine + (lostMassKg * 1.67);
-        
-        // 5. ШКФ за CKD-EPI з використанням скоригованого креатиніну (без корекції маси тіла)
         const egfrCkdEpi = ckdEpi2021(sex, age, adjustedCreatinine);
         
-        // Стадія ХНН за ШКФ (KDIGO)
         let stage = "";
         if (egfrCkdEpi >= 90) stage = "1 (норма або мінімальне зниження)";
         else if (egfrCkdEpi >= 60) stage = "2 (незначне зниження)";
@@ -307,16 +271,9 @@
         else if (egfrCkdEpi >= 15) stage = "4 (тяжке зниження)";
         else stage = "5 (термінальна ниркова недостатність)";
 
-        // 6. Площа тіла: спочатку для скоригованих параметрів (якби без ампутації)
         const bsaAdjusted = bodySurfaceArea(adjustedWeight, heightCm);
-        
-        // 7. Орієнтовна втрата площі тіла (для довідки)
-        // За статтею: площа втрачених кінцівок ≈ 0.56 × маса втраченої кінцівки (для ніг)
-        const estimatedBSALoss = lostMassKg * 0.56; // грубе наближення
+        const estimatedBSALoss = lostMassKg * 0.56;
         const bsaReal = Math.max(bsaAdjusted - estimatedBSALoss, 1.0);
-
-        // 8. Індекс маси міокарда ЛШ (приклад, якщо ввести масу міокарда)
-        // Це для демонстрації – залишаємо інформаційним
 
         const resultHtml = `
             <div class="result-item"><span class="result-label">📊 Сумарна втрата маси тіла:</span><span class="result-value">${(totalLoss*100).toFixed(2)}% (≈ ${lostMassKg.toFixed(1)} кг)</span></div>
@@ -344,8 +301,8 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.amp-cb').forEach(cb => cb.addEventListener('change', updateTotalLossDisplay));
-        setupExclusiveLogic();
+        const radios = document.querySelectorAll('input[type="radio"]');
+        radios.forEach(radio => radio.addEventListener('change', updateTotalLossDisplay));
         updateTotalLossDisplay();
         document.getElementById('calcBtn').addEventListener('click', calculate);
         document.getElementById('clearAmputationsBtn').addEventListener('click', clearAllAmputations);
