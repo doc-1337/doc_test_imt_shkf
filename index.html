@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>PATRIOT – калькулятор для ампутантів</title>
+    <title>Калькулятор ІМТ та ШКФ для ампутантів</title>
     <meta name="description" content="Калькулятор ІМТ, площі тіла та ШКФ для пацієнтів з ампутаціями кінцівок (третини). Модифікований метод Osterkamp (2026). Розробники: Ігор Стельмащук та ШІ.">
     <style>
         * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; }
@@ -46,8 +46,8 @@
 </head>
 <body>
 <div class="container">
-    <h1>🩺 PATRIOT</h1>
-    <div class="sub">Калькулятор для пацієнтів з ампутаціями кінцівок (Українська військово-медична академія, 2025)</div>
+    <h1>🩺 Калькулятор ІМТ та ШКФ</h1>
+    <div class="sub">Для пацієнтів з ампутаціями кінцівок (Українська військово-медична академія, 2025)</div>
 
     <div class="grid-2">
         <div class="panel">
@@ -85,7 +85,7 @@
                 <div class="limb-row">
                     <div class="limb-title">🦵 Ліва нога</div>
                     <div class="radio-option-group" id="left-leg-group">
-                        <label><input type="radio" name="left_leg" value="none" checked> Ціла</label>
+                        <label><input type="radio" name="left_leg" value="none" checked> Збережена</label>
                         <label><input type="radio" name="left_leg" value="0.015"> Стопа (1.5%)</label>
                         <label><input type="radio" name="left_leg" value="0.027"> Гомілка (нижня 1/3, 2.7%)</label>
                         <label><input type="radio" name="left_leg" value="0.042"> Гомілка (середня 1/3, 4.2%)</label>
@@ -101,7 +101,7 @@
                 <div class="limb-row">
                     <div class="limb-title">🦵 Права нога</div>
                     <div class="radio-option-group" id="right-leg-group">
-                        <label><input type="radio" name="right_leg" value="none" checked> Ціла</label>
+                        <label><input type="radio" name="right_leg" value="none" checked> Збережена</label>
                         <label><input type="radio" name="right_leg" value="0.015"> Стопа (1.5%)</label>
                         <label><input type="radio" name="right_leg" value="0.027"> Гомілка (нижня 1/3, 2.7%)</label>
                         <label><input type="radio" name="right_leg" value="0.042"> Гомілка (середня 1/3, 4.2%)</label>
@@ -116,36 +116,36 @@
                 <div class="limb-row">
                     <div class="limb-title">💪 Ліва рука</div>
                     <div class="radio-option-group" id="left-arm-group">
-                        <label><input type="radio" name="left_arm" value="none" checked> Ціла</label>
+                        <label><input type="radio" name="left_arm" value="none" checked> Збережена</label>
                         <label><input type="radio" name="left_arm" value="0.007"> Кисть (0.7%)</label>
-                        <label><input type="radio" name="left_arm" value="0.011"> Передпліччя (нижня 1/3, 1.1%)</label>
-                        <label><input type="radio" name="left_arm" value="0.019"> Передпліччя (середня 1/3, 1.9%)</label>
-                        <label><input type="radio" name="left_arm" value="0.030"> Передпліччя (верхня 1/3, 3.0%)</label>
-                        <label><input type="radio" name="left_arm" value="0.037"> Плече (нижня 1/3, 3.7%)</label>
-                        <label><input type="radio" name="left_arm" value="0.045"> Плече (середня 1/3, 4.5%)</label>
-                        <label><input type="radio" name="left_arm" value="0.048"> Плече (верхня 1/3, 4.8%)</label>
+                        <label><input type="radio" name="left_arm" value="0.010"> Передпліччя (нижня 1/3, 1.0%)</label>
+                        <label><input type="radio" name="left_arm" value="0.015"> Передпліччя (середня 1/3, 1.5%)</label>
+                        <label><input type="radio" name="left_arm" value="0.023"> Передпліччя (верхня 1/3, 2.3%)</label>
+                        <label><input type="radio" name="left_arm" value="0.030"> Плече (нижня 1/3, 3.0%)</label>
+                        <label><input type="radio" name="left_arm" value="0.038"> Плече (середня 1/3, 3.8%)</label>
+                        <label><input type="radio" name="left_arm" value="0.047"> Плече (верхня 1/3, 4.7%)</label>
                         <label><input type="radio" name="left_arm" value="0.050"> Вся рука (5.0%)</label>
                     </div>
-                    <div class="limb-note">⚠️ Верхня третина плеча = 4.8% (кукса залишається)</div>
+                    <div class="limb-note">⚠️ Верхня третина плеча = 4.7% (кукса залишається)</div>
                 </div>
                 <!-- Права рука -->
                 <div class="limb-row">
                     <div class="limb-title">💪 Права рука</div>
                     <div class="radio-option-group" id="right-arm-group">
-                        <label><input type="radio" name="right_arm" value="none" checked> Ціла</label>
+                        <label><input type="radio" name="right_arm" value="none" checked> Збережена</label>
                         <label><input type="radio" name="right_arm" value="0.007"> Кисть (0.7%)</label>
-                        <label><input type="radio" name="right_arm" value="0.011"> Передпліччя (нижня 1/3, 1.1%)</label>
-                        <label><input type="radio" name="right_arm" value="0.019"> Передпліччя (середня 1/3, 1.9%)</label>
-                        <label><input type="radio" name="right_arm" value="0.030"> Передпліччя (верхня 1/3, 3.0%)</label>
-                        <label><input type="radio" name="right_arm" value="0.037"> Плече (нижня 1/3, 3.7%)</label>
-                        <label><input type="radio" name="right_arm" value="0.045"> Плече (середня 1/3, 4.5%)</label>
-                        <label><input type="radio" name="right_arm" value="0.048"> Плече (верхня 1/3, 4.8%)</label>
+                        <label><input type="radio" name="right_arm" value="0.010"> Передпліччя (нижня 1/3, 1.0%)</label>
+                        <label><input type="radio" name="right_arm" value="0.015"> Передпліччя (середня 1/3, 1.5%)</label>
+                        <label><input type="radio" name="right_arm" value="0.023"> Передпліччя (верхня 1/3, 2.3%)</label>
+                        <label><input type="radio" name="right_arm" value="0.030"> Плече (нижня 1/3, 3.0%)</label>
+                        <label><input type="radio" name="right_arm" value="0.038"> Плече (середня 1/3, 3.8%)</label>
+                        <label><input type="radio" name="right_arm" value="0.047"> Плече (верхня 1/3, 4.7%)</label>
                         <label><input type="radio" name="right_arm" value="0.050"> Вся рука (5.0%)</label>
                     </div>
                 </div>
             </div>
             <div id="totalLossDisplay" class="total-loss">📉 Сумарна втрата маси: 0.0%</div>
-            <button type="button" id="clearAmputationsBtn" class="btn-secondary">🗑 Скинути всі ампутації (всі "Ціла")</button>
+            <button type="button" id="clearAmputationsBtn" class="btn-secondary">🗑 Скинути всі ампутації (всі "Збережена")</button>
         </div>
     </div>
 
@@ -164,10 +164,10 @@
     </div>
     <footer>
         ⚕️ Джерело: проєкт PATRIOT, НВМКЦ «ГВКГ», Українська військово-медична академія (2024–2025).<br>
-        Коефіцієнти втрати маси тіла (кумулятивні) – унікальна модифікація Osterkamp-Stelmashchuk (2026) з розподілом на третини <br>
+        Коефіцієнти втрати маси тіла (кумулятивні) – унікальна модифікація Osterkamp (2026) з розподілом на третини, розроблена спільно з ШІ.<br>
         Коригування креатиніну – за Sydorova et al. (2025).
         <div class="developer">
-            👨‍💻 Розробник: <strong>Ihor Stelmashchuk (doc_1337)</strong>
+            👨‍💻 Розробники: <strong>Ігор Стельмащук</strong> та асистент на основі ШІ (DeepSeek)<br>
             📧 smart47785@gmail.com
         </div>
     </footer>
