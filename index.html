@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Калькулятор ІМТ та ШКФ для ампутантів</title>
-    <meta name="description" content="Калькулятор ІМТ, площі тіла та ШКФ для пацієнтів з ампутаціями кінцівок (третини). Модифікований метод Osterkamp (2026). Розробники: Ігор Стельмащук та ШІ.">
+    <title>Калькулятор ІМТ, площі тіла та ШКФ для ампутантів</title>
+    <meta name="description" content="Калькулятор ІМТ, площі тіла та ШКФ (CKD-EPI 2021) для пацієнтів з ампутаціями кінцівок. Унікальна модифікація Osterkamp (2026). Розробник: Ігор Стельмащук.">
     <style>
         * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; }
         body { background: #eef2f7; margin: 0; padding: 20px; }
@@ -46,8 +46,8 @@
 </head>
 <body>
 <div class="container">
-    <h1>🩺 Калькулятор ІМТ та ШКФ</h1>
-    <div class="sub">Для пацієнтів з ампутаціями кінцівок (Українська військово-медична академія, 2025)</div>
+    <h1>🩺 Калькулятор ІМТ, площі тіла та ШКФ (CKD-EPI 2021)</h1>
+    <div class="sub">Для пацієнтів з ампутаціями кінцівок (НВМКЦ «ГВКГ», УВМА, Київ, Україна)</div>
 
     <div class="grid-2">
         <div class="panel">
@@ -66,7 +66,7 @@
             <div class="form-group">
                 <label>Зріст до ампутації (см)</label>
                 <input type="number" id="height" value="180" step="0.5" min="100" max="250">
-                <small style="color:#5f7f9a">Використовуйте зріст до втрати кінцівок або розмах рук</small>
+                <small style="color:#5f7f9a">Введіть зріст до втрати кінцівок</small>
             </div>
             <div class="form-group">
                 <label>Поточна вага (кг)</label>
@@ -156,25 +156,29 @@
         <div id="resultContent"></div>
         <div class="warning" id="warningMsg"></div>
         <div class="info">
-            ℹ️ Методика описана у статті: Сидорова Н.М. та ін. "Невирішені питання ведення лікарем терапевтичного профілю пацієнта після ампутації кінцівок..." (2025)<br>
-            ▶ Коригований креатинін = креатинін + (втрачена маса в кг × 1.67 мкмоль/л)<br>
-            ▶ Кожен вищий рівень ампутації включає всі нижчі (кумулятивні відсотки)<br>
-            ▶ Вибір лише одного варіанту на кінцівку для уникнення плутанини
+            ℹ️ Джерело: проєкт PATRIOT. Установи розробники: Національний військово-медичний клінічний центр «Головний військовий клінічний госпіталь» (НВМКЦ «ГВКГ»), Українська військово-медична академія (УВМА).<br>
+            ▶ Коефіцієнти втрати маси тіла (кумулятивні) – унікальна модифікація (2026) методики L. K. Osterkamp (1995) з розподілом на третини, розроблена спільно з ШІ.<br>
+            ▶ Коригування креатиніну, розрахунок ШКФ за скоригованим креатиніном, ІМТ та площі тіла – згідно з Sydorova N.M. et al. (2025).<br>
+            ▶ Коригований креатинін = креатинін + (втрачена маса в кг × 1.67 мкмоль/л)
         </div>
     </div>
     <footer>
-        ⚕️ Джерело: проєкт PATRIOT, НВМКЦ «ГВКГ», Українська військово-медична академія (2024–2025).<br>
-        Коефіцієнти втрати маси тіла (кумулятивні) – унікальна модифікація Osterkamp (2026) з розподілом на третини, розроблена спільно з ШІ.<br>
-        Коригування креатиніну – за Sydorova et al. (2025).
+        ⚕️ Сидорова Н. М., Царалунга В. М., Семенець О. Л. та ін. Сучасні аспекти військової медицини. 2025;32(1):129–144. <a href="https://doi.org/10.32751/2310-4910-2025-32-1-11" target="_blank">DOI</a><br>
+        Osterkamp L. K. J Am Diet Assoc. 1995;95(2):215–218. <a href="https://doi.org/10.1016/S0002-8223(95)00050-X" target="_blank">DOI</a>
         <div class="developer">
-            👨‍💻 Розробники: <strong>Ігор Стельмащук</strong><br>
+            👨‍💻 Розробник онлайн-калькулятора: <strong>Ігор Стельмащук</strong><br>
             📧 smart47785@gmail.com
         </div>
     </footer>
 </div>
 
 <script>
-    function computeTotalLoss() {
+    // Таблиця кумулятивних відсотків втрати маси (маса в кг)
+    // Для кожної кінцівки визначено мапу: для рівнів ампутації (у тому ж порядку, що й радіокнопки)
+    // Використовуємо ті ж значення, що й у радіокнопках
+
+    // Функція отримання сумарної втрати маси у відсотках (від 0 до 1)
+    function computeTotalLossFraction() {
         let total = 0;
         const limbs = ['left_leg', 'right_leg', 'left_arm', 'right_arm'];
         for (let limb of limbs) {
@@ -184,6 +188,62 @@
             }
         }
         return Math.min(total, 0.95);
+    }
+
+    // Функція для отримання списку вибраних рівнів ампутації (щоб знати, які сегменти втрачено)
+    function getSelectedLevels() {
+        const levels = {
+            left_leg: null, right_leg: null, left_arm: null, right_arm: null
+        };
+        const limbs = ['left_leg', 'right_leg', 'left_arm', 'right_arm'];
+        for (let limb of limbs) {
+            const selected = document.querySelector(`input[name="${limb}"]:checked`);
+            if (selected && selected.value !== 'none') {
+                levels[limb] = selected.value; // значення у вигляді рядка, наприклад "0.148"
+            }
+        }
+        return levels;
+    }
+
+    // Функція розрахунку реальної площі тіла за методикою зі статті (через віднімання площі втрачених сегментів)
+    function computeRealBodySurfaceArea(adjustedWeight, heightCm, totalLossFraction, selectedLevels) {
+        // 1. Скоригована площа тіла (якби без ампутацій) за Дюбуа
+        const bsaAdjusted = 0.007184 * Math.pow(adjustedWeight, 0.425) * Math.pow(heightCm, 0.725);
+        
+        // 2. Визначаємо сумарний відсоток втраченої ПЛОЩІ тіла (а не маси)
+        // За даними статті: для ноги коефіцієнт приведення маси до площі = 0.56, для руки = 0.9.
+        // Також у статті наведено відсотки площі для окремих частин (рис.2). Ми використаємо кумулятивні відсотки площі,
+        // які відповідають рівням ампутації. Оскільки у нас радіокнопки з кумулятивними відсотками маси,
+        // то відсоток площі для кожного рівня обчислюємо як: площа_відсоток = маса_відсоток * коефіцієнт_приведення.
+        // Коефіцієнт приведення для ноги 0.56, для руки 0.9.
+        let totalAreaLossPercent = 0; // у відсотках (0-1)
+        
+        const legMassToAreaFactor = 0.56;
+        const armMassToAreaFactor = 0.9;
+        
+        if (selectedLevels.left_leg && selectedLevels.left_leg !== 'none') {
+            const massLoss = parseFloat(selectedLevels.left_leg);
+            totalAreaLossPercent += massLoss * legMassToAreaFactor;
+        }
+        if (selectedLevels.right_leg && selectedLevels.right_leg !== 'none') {
+            const massLoss = parseFloat(selectedLevels.right_leg);
+            totalAreaLossPercent += massLoss * legMassToAreaFactor;
+        }
+        if (selectedLevels.left_arm && selectedLevels.left_arm !== 'none') {
+            const massLoss = parseFloat(selectedLevels.left_arm);
+            totalAreaLossPercent += massLoss * armMassToAreaFactor;
+        }
+        if (selectedLevels.right_arm && selectedLevels.right_arm !== 'none') {
+            const massLoss = parseFloat(selectedLevels.right_arm);
+            totalAreaLossPercent += massLoss * armMassToAreaFactor;
+        }
+        
+        // Відсоток площі не може перевищувати 0.5 (50% площі тіла)
+        totalAreaLossPercent = Math.min(totalAreaLossPercent, 0.5);
+        
+        // Реальна площа тіла = скоригована площа мінус втрачена площа
+        const bsaReal = bsaAdjusted * (1 - totalAreaLossPercent);
+        return Math.max(bsaReal, 0.5);
     }
 
     function computeLostMassKg(currentWeight, totalLossFraction) {
@@ -209,7 +269,7 @@
     }
 
     function updateTotalLossDisplay() {
-        let loss = computeTotalLoss();
+        let loss = computeTotalLossFraction();
         let percent = (loss * 100).toFixed(2);
         document.getElementById('totalLossDisplay').innerHTML = `📉 Сумарна втрата маси: ${percent}%`;
         if (loss >= 0.5) {
@@ -242,13 +302,13 @@
         if (isNaN(currentWeight) || currentWeight <= 0) { alert("Введіть поточну вагу"); return; }
         if (isNaN(creatinine) || creatinine <= 0) { alert("Введіть рівень креатиніну"); return; }
 
-        const totalLoss = computeTotalLoss();
-        if (totalLoss >= 0.95) {
+        const totalLossFraction = computeTotalLossFraction();
+        if (totalLossFraction >= 0.95) {
             alert("Сумарна частка втрати маси перевищує 95% – перевірте вибір ампутацій");
             return;
         }
 
-        const adjustedWeight = currentWeight / (1 - totalLoss);
+        const adjustedWeight = currentWeight / (1 - totalLossFraction);
         const heightM = heightCm / 100;
         const bmi = adjustedWeight / (heightM * heightM);
         let bmiCat = "";
@@ -259,7 +319,7 @@
         else if (bmi < 40) bmiCat = "Ожиріння ІІ ступеня";
         else bmiCat = "Ожиріння ІІІ ступеня";
 
-        const lostMassKg = computeLostMassKg(currentWeight, totalLoss);
+        const lostMassKg = computeLostMassKg(currentWeight, totalLossFraction);
         const adjustedCreatinine = creatinine + (lostMassKg * 1.67);
         const egfrCkdEpi = ckdEpi2021(sex, age, adjustedCreatinine);
         
@@ -271,12 +331,15 @@
         else if (egfrCkdEpi >= 15) stage = "4 (тяжке зниження)";
         else stage = "5 (термінальна ниркова недостатність)";
 
+        // Скоригована площа тіла (якби без ампутацій) за Дюбуа
         const bsaAdjusted = bodySurfaceArea(adjustedWeight, heightCm);
-        const estimatedBSALoss = lostMassKg * 0.56;
-        const bsaReal = Math.max(bsaAdjusted - estimatedBSALoss, 1.0);
+        
+        // Реальна площа тіла за методикою зі статті (через віднімання площі втрачених сегментів)
+        const selectedLevels = getSelectedLevels();
+        const bsaReal = computeRealBodySurfaceArea(adjustedWeight, heightCm, totalLossFraction, selectedLevels);
 
         const resultHtml = `
-            <div class="result-item"><span class="result-label">📊 Сумарна втрата маси тіла:</span><span class="result-value">${(totalLoss*100).toFixed(2)}% (≈ ${lostMassKg.toFixed(1)} кг)</span></div>
+            <div class="result-item"><span class="result-label">📊 Сумарна втрата маси тіла:</span><span class="result-value">${(totalLossFraction*100).toFixed(2)}% (≈ ${lostMassKg.toFixed(1)} кг)</span></div>
             <div class="result-item"><span class="result-label">⚖️ Скоригована маса тіла (без ампутацій):</span><span class="result-value">${adjustedWeight.toFixed(1)} кг</span></div>
             <div class="result-item"><span class="result-label">📐 Індекс маси тіла (ІМТ) скоригований:</span><span class="result-value">${bmi.toFixed(1)} кг/м² — ${bmiCat}</span></div>
             <div class="result-item"><span class="result-label">🧪 Креатинін виміряний:</span><span class="result-value">${creatinine.toFixed(1)} мкмоль/л</span></div>
@@ -284,7 +347,7 @@
             <div class="result-item"><span class="result-label">🩸 ШКФ (CKD-EPI 2021) за скоригованим креатиніном:</span><span class="result-value">${egfrCkdEpi.toFixed(1)} мл/хв/1.73м²</span></div>
             <div class="result-item"><span class="result-label">🩺 Стадія ХНН (KDIGO):</span><span class="result-value">${stage}</span></div>
             <div class="result-item"><span class="result-label">📏 Площа тіла (Дюбуа, скоригована):</span><span class="result-value">${bsaAdjusted.toFixed(2)} м²</span></div>
-            <div class="result-item"><span class="result-label">📐 Реальна площа тіла (орієнтовно):</span><span class="result-value">${bsaReal.toFixed(2)} м²</span></div>
+            <div class="result-item"><span class="result-label">📐 Реальна площа тіла (з урахуванням ампутацій):</span><span class="result-value">${bsaReal.toFixed(2)} м²</span></div>
         `;
         
         let warningText = "";
