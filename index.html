@@ -317,8 +317,9 @@
         else stage = "5 (термінальна)";
 
         const bsaAdjusted = bodySurfaceArea(adjustedWeight, heightCm);
-        // Реальна площа тіла за методикою зі статті: площа втрачених кінцівок = втрачена маса * коефіцієнт 0.56 (для ніг, усереднено)
-        const bsaReal = Math.max(bsaAdjusted - lostMassKg * 0.56, 0.5);
+        // ВИПРАВЛЕНА ФОРМУЛА РЕАЛЬНОЇ ПЛОЩІ ТІЛА (згідно зі статтею)
+        // Коефіцієнт приведення маси до площі для кінцівок усереднений (0.65)
+        const bsaReal = Math.max(bsaAdjusted * (1 - totalLoss * 0.65), 0.5);
 
         const resultHtml = `
             <div class="result-item"><span class="result-label">📊 Сумарна втрата маси тіла:</span><span class="result-value">${(totalLoss*100).toFixed(2)}% (≈ ${lostMassKg.toFixed(1)} кг)</span></div>
