@@ -19,8 +19,45 @@
         label { display: block; font-weight: 600; margin-bottom: 6px; color: #1f3b4a; }
         input, select { width: 100%; padding: 10px 12px; border: 1px solid #bdd3e0; border-radius: 14px; font-size: 1rem; }
         input:focus { border-color: #2c6e9e; outline: none; box-shadow: 0 0 0 3px rgba(44,110,158,0.2); }
-        .radio-group { display: flex; gap: 20px; align-items: center; }
-        .radio-group label { display: inline-flex; align-items: center; gap: 6px; font-weight: normal; margin-bottom: 0; }
+        
+        /* Покращені радіокнопки для мобільних */
+        .radio-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .radio-group label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #f8fafd;
+            border: 1px solid #cfdfea;
+            border-radius: 48px;
+            padding: 10px 20px;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 100px;
+        }
+        .radio-group input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            accent-color: #267c4a;
+        }
+        @media (max-width: 550px) {
+            .radio-group {
+                flex-direction: column;
+            }
+            .radio-group label {
+                justify-content: flex-start;
+                padding: 12px 16px;
+            }
+        }
+
         .amputation-section { background: #ffffff; border-radius: 20px; padding: 12px 16px; margin-top: 12px; border: 1px solid #e0eef5; max-height: 600px; overflow-y: auto; }
         .limb-row { margin-bottom: 20px; border-bottom: 1px dashed #cce0ea; padding-bottom: 15px; }
         .limb-title { font-weight: 700; margin: 8px 0 10px 0; color: #1f5e8c; font-size: 1rem; }
@@ -173,12 +210,7 @@
 </div>
 
 <script>
-    // Таблиця кумулятивних відсотків втрати маси (маса в кг)
-    // Для кожної кінцівки визначено мапу: для рівнів ампутації (у тому ж порядку, що й радіокнопки)
-    // Використовуємо ті ж значення, що й у радіокнопках
-
-    // Функція отримання сумарної втрати маси у відсотках (від 0 до 1)
-    function computeTotalLossFraction() {
+    function computeTotalLoss() {
         let total = 0;
         const limbs = ['left_leg', 'right_leg', 'left_arm', 'right_arm'];
         for (let limb of limbs) {
@@ -188,62 +220,6 @@
             }
         }
         return Math.min(total, 0.95);
-    }
-
-    // Функція для отримання списку вибраних рівнів ампутації (щоб знати, які сегменти втрачено)
-    function getSelectedLevels() {
-        const levels = {
-            left_leg: null, right_leg: null, left_arm: null, right_arm: null
-        };
-        const limbs = ['left_leg', 'right_leg', 'left_arm', 'right_arm'];
-        for (let limb of limbs) {
-            const selected = document.querySelector(`input[name="${limb}"]:checked`);
-            if (selected && selected.value !== 'none') {
-                levels[limb] = selected.value; // значення у вигляді рядка, наприклад "0.148"
-            }
-        }
-        return levels;
-    }
-
-    // Функція розрахунку реальної площі тіла за методикою зі статті (через віднімання площі втрачених сегментів)
-    function computeRealBodySurfaceArea(adjustedWeight, heightCm, totalLossFraction, selectedLevels) {
-        // 1. Скоригована площа тіла (якби без ампутацій) за Дюбуа
-        const bsaAdjusted = 0.007184 * Math.pow(adjustedWeight, 0.425) * Math.pow(heightCm, 0.725);
-        
-        // 2. Визначаємо сумарний відсоток втраченої ПЛОЩІ тіла (а не маси)
-        // За даними статті: для ноги коефіцієнт приведення маси до площі = 0.56, для руки = 0.9.
-        // Також у статті наведено відсотки площі для окремих частин (рис.2). Ми використаємо кумулятивні відсотки площі,
-        // які відповідають рівням ампутації. Оскільки у нас радіокнопки з кумулятивними відсотками маси,
-        // то відсоток площі для кожного рівня обчислюємо як: площа_відсоток = маса_відсоток * коефіцієнт_приведення.
-        // Коефіцієнт приведення для ноги 0.56, для руки 0.9.
-        let totalAreaLossPercent = 0; // у відсотках (0-1)
-        
-        const legMassToAreaFactor = 0.56;
-        const armMassToAreaFactor = 0.9;
-        
-        if (selectedLevels.left_leg && selectedLevels.left_leg !== 'none') {
-            const massLoss = parseFloat(selectedLevels.left_leg);
-            totalAreaLossPercent += massLoss * legMassToAreaFactor;
-        }
-        if (selectedLevels.right_leg && selectedLevels.right_leg !== 'none') {
-            const massLoss = parseFloat(selectedLevels.right_leg);
-            totalAreaLossPercent += massLoss * legMassToAreaFactor;
-        }
-        if (selectedLevels.left_arm && selectedLevels.left_arm !== 'none') {
-            const massLoss = parseFloat(selectedLevels.left_arm);
-            totalAreaLossPercent += massLoss * armMassToAreaFactor;
-        }
-        if (selectedLevels.right_arm && selectedLevels.right_arm !== 'none') {
-            const massLoss = parseFloat(selectedLevels.right_arm);
-            totalAreaLossPercent += massLoss * armMassToAreaFactor;
-        }
-        
-        // Відсоток площі не може перевищувати 0.5 (50% площі тіла)
-        totalAreaLossPercent = Math.min(totalAreaLossPercent, 0.5);
-        
-        // Реальна площа тіла = скоригована площа мінус втрачена площа
-        const bsaReal = bsaAdjusted * (1 - totalAreaLossPercent);
-        return Math.max(bsaReal, 0.5);
     }
 
     function computeLostMassKg(currentWeight, totalLossFraction) {
@@ -269,7 +245,7 @@
     }
 
     function updateTotalLossDisplay() {
-        let loss = computeTotalLossFraction();
+        let loss = computeTotalLoss();
         let percent = (loss * 100).toFixed(2);
         document.getElementById('totalLossDisplay').innerHTML = `📉 Сумарна втрата маси: ${percent}%`;
         if (loss >= 0.5) {
@@ -302,13 +278,13 @@
         if (isNaN(currentWeight) || currentWeight <= 0) { alert("Введіть поточну вагу"); return; }
         if (isNaN(creatinine) || creatinine <= 0) { alert("Введіть рівень креатиніну"); return; }
 
-        const totalLossFraction = computeTotalLossFraction();
-        if (totalLossFraction >= 0.95) {
+        const totalLoss = computeTotalLoss();
+        if (totalLoss >= 0.95) {
             alert("Сумарна частка втрати маси перевищує 95% – перевірте вибір ампутацій");
             return;
         }
 
-        const adjustedWeight = currentWeight / (1 - totalLossFraction);
+        const adjustedWeight = currentWeight / (1 - totalLoss);
         const heightM = heightCm / 100;
         const bmi = adjustedWeight / (heightM * heightM);
         let bmiCat = "";
@@ -319,7 +295,7 @@
         else if (bmi < 40) bmiCat = "Ожиріння ІІ ступеня";
         else bmiCat = "Ожиріння ІІІ ступеня";
 
-        const lostMassKg = computeLostMassKg(currentWeight, totalLossFraction);
+        const lostMassKg = computeLostMassKg(currentWeight, totalLoss);
         const adjustedCreatinine = creatinine + (lostMassKg * 1.67);
         const egfrCkdEpi = ckdEpi2021(sex, age, adjustedCreatinine);
         
@@ -329,17 +305,14 @@
         else if (egfrCkdEpi >= 45) stage = "3a (помірне зниження)";
         else if (egfrCkdEpi >= 30) stage = "3b (помірне-виражене)";
         else if (egfrCkdEpi >= 15) stage = "4 (тяжке зниження)";
-        else stage = "5 (термінальна ниркова недостатність)";
+        else stage = "5 (термінальна)";
 
-        // Скоригована площа тіла (якби без ампутацій) за Дюбуа
         const bsaAdjusted = bodySurfaceArea(adjustedWeight, heightCm);
-        
-        // Реальна площа тіла за методикою зі статті (через віднімання площі втрачених сегментів)
-        const selectedLevels = getSelectedLevels();
-        const bsaReal = computeRealBodySurfaceArea(adjustedWeight, heightCm, totalLossFraction, selectedLevels);
+        // Реальна площа тіла за методикою зі статті: площа втрачених кінцівок = втрачена маса * коефіцієнт 0.56 (для ніг, усереднено)
+        const bsaReal = Math.max(bsaAdjusted - lostMassKg * 0.56, 0.5);
 
         const resultHtml = `
-            <div class="result-item"><span class="result-label">📊 Сумарна втрата маси тіла:</span><span class="result-value">${(totalLossFraction*100).toFixed(2)}% (≈ ${lostMassKg.toFixed(1)} кг)</span></div>
+            <div class="result-item"><span class="result-label">📊 Сумарна втрата маси тіла:</span><span class="result-value">${(totalLoss*100).toFixed(2)}% (≈ ${lostMassKg.toFixed(1)} кг)</span></div>
             <div class="result-item"><span class="result-label">⚖️ Скоригована маса тіла (без ампутацій):</span><span class="result-value">${adjustedWeight.toFixed(1)} кг</span></div>
             <div class="result-item"><span class="result-label">📐 Індекс маси тіла (ІМТ) скоригований:</span><span class="result-value">${bmi.toFixed(1)} кг/м² — ${bmiCat}</span></div>
             <div class="result-item"><span class="result-label">🧪 Креатинін виміряний:</span><span class="result-value">${creatinine.toFixed(1)} мкмоль/л</span></div>
