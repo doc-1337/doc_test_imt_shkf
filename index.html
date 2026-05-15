@@ -80,7 +80,16 @@
         .developer { margin-top: 12px; font-size: 0.75rem; color: #2c6e9e; text-align: center; }
         @media (max-width: 850px) { .container { padding: 16px; } .radio-option-group label { padding: 3px 6px; font-size: 0.7rem; } }
     </style>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1f6e43">
 </head>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('Service Worker registered', reg))
+      .catch(err => console.log('Service Worker registration failed', err));
+  }
+</script>
 <body>
 <div class="container">
     <h1>🩺 Калькулятор ІМТ, площі тіла та ШКФ (CKD-EPI 2021)</h1>
