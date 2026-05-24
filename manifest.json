@@ -1,8 +1,8 @@
 {
   "name": "Калькулятор ІМТ та ШКФ для ампутантів",
   "short_name": "Калькулятор ампутацій",
-  "description": "Розрахунок скоригованого ІМТ, ШКФ та площі тіла у пацієнтів з ампутаціями кінцівок (унікальна модифікація Osterkamp, 2026)",
-  "start_url": "/",
+  "start_url": "/doc_test_imt_shkf/",
+  "scope": "/doc_test_imt_shkf/",
   "display": "standalone",
   "theme_color": "#1f6e43",
   "background_color": "#eef2f7",
