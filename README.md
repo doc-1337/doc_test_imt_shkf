@@ -40,4 +40,4 @@
 
 Якщо ви використовуєте цей калькулятор у вашому дослідженні, будь ласка, цитуйте його за DOI:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXXXX)
+[![DOI](https://doi.org/10.5281/zenodo.20386871.svg)](https://doi.org/10.5281/zenodo.20386871)
