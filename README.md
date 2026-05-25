@@ -15,11 +15,7 @@
 
 ## ⚙️ Як використовувати
 
-Ви можете скористатися калькулятором безпосередньо за посиланням: [Посилання на GitHub Pages](https://doc-1337.github.io/doc_test_imt_shkf/)
-
-Або запустити локально:
-1. Клонуйте репозиторій: `git clone https://github.com/your-username/PATRIOT-calculator.git`
-2. Відкрийте файл `index.html` у вашому браузері.
+Ви можете скористатися калькулятором безпосередньо за посиланням: [(https://doc-1337.github.io/doc_test_imt_shkf/)]
 
 ## 🛠️ Технології
 
