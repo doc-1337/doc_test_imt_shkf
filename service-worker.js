@@ -1,4 +1,4 @@
-const CACHE_NAME = 'amputation-calc-v2';
+const CACHE_NAME = 'amputation-calc-v1';
 const urlsToCache = [
   './',
   './index.html',
