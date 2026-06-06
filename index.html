@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Калькулятор ІМТ, площі тіла та ШКФ для ампутантів</title>
     <meta name="description" content="Калькулятор ІМТ, площі тіла та ШКФ (CKD-EPI 2021) для пацієнтів з ампутаціями кінцівок. Унікальна модифікація Osterkamp (2026). Розробник: Ігор Стельмащук.">
+    <!-- PWA manifest та theme-color -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#1f6e43">
     <style>
         * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; }
         body { background: #eef2f7; margin: 0; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); padding: 24px 28px; }
         h1 { font-size: 1.8rem; margin-top: 0; color: #1a3e60; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .badge { background: #1a3e60; color: white; font-size: 0.7rem; padding: 4px 12px; border-radius: 40px; }
         .sub { color: #2c6e9e; border-left: 4px solid #2c6e9e; padding-left: 16px; margin-bottom: 28px; font-weight: 500; }
         .grid-2 { display: flex; flex-wrap: wrap; gap: 24px; }
         .panel { flex: 1; min-width: 380px; background: #f9fbfd; border-radius: 20px; padding: 18px 20px; border: 1px solid #e2edf2; }
@@ -80,16 +82,7 @@
         .developer { margin-top: 12px; font-size: 0.75rem; color: #2c6e9e; text-align: center; }
         @media (max-width: 850px) { .container { padding: 16px; } .radio-option-group label { padding: 3px 6px; font-size: 0.7rem; } }
     </style>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#1f6e43">
 </head>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => console.log('Service Worker registered', reg))
-      .catch(err => console.log('Service Worker registration failed', err));
-  }
-</script>
 <body>
 <div class="container">
     <h1>🩺 Калькулятор ІМТ, площі тіла та ШКФ (CKD-EPI 2021)</h1>
@@ -203,7 +196,7 @@
         <div class="warning" id="warningMsg"></div>
         <div class="info">
             ℹ️ Джерело: проєкт PATRIOT. Установи розробники: Національний військово-медичний клінічний центр «Головний військовий клінічний госпіталь» (НВМКЦ «ГВКГ»), Українська військово-медична академія (УВМА).<br>
-            ▶ Коефіцієнти втрати маси тіла (кумулятивні) – унікальна модифікація (2026) методики L. K. Osterkamp (1995) з розподілом на третини.<br>
+            ▶ Коефіцієнти втрати маси тіла (кумулятивні) – унікальна модифікація (2026) методики L. K. Osterkamp (1995) з розподілом на третини, розроблена спільно з ШІ.<br>
             ▶ Коригування креатиніну, розрахунок ШКФ за скоригованим креатиніном, ІМТ та площі тіла – згідно з Sydorova N.M. et al. (2025).<br>
             ▶ Коригований креатинін = креатинін + (втрачена маса в кг × 1.67 мкмоль/л)
         </div>
@@ -212,7 +205,7 @@
         ⚕️ Сидорова Н. М., Царалунга В. М., Семенець О. Л. та ін. Сучасні аспекти військової медицини. 2025;32(1):129–144. <a href="https://doi.org/10.32751/2310-4910-2025-32-1-11" target="_blank">DOI</a><br>
         Osterkamp L. K. J Am Diet Assoc. 1995;95(2):215–218. <a href="https://doi.org/10.1016/S0002-8223(95)00050-X" target="_blank">DOI</a>
         <div class="developer">
-            👨‍💻 Розробник онлайн-калькулятора: <strong>Ігор Стельмащук(doc-1337)</strong><br>
+            👨‍💻 Розробник онлайн-калькулятора: <strong>Ігор Стельмащук</strong><br>
             📧 smart47785@gmail.com
         </div>
     </footer>
@@ -317,9 +310,7 @@
         else stage = "5 (термінальна)";
 
         const bsaAdjusted = bodySurfaceArea(adjustedWeight, heightCm);
-        // ВИПРАВЛЕНА ФОРМУЛА РЕАЛЬНОЇ ПЛОЩІ ТІЛА (згідно зі статтею)
-        // Коефіцієнт приведення маси до площі для кінцівок усереднений (0.65)
-        const bsaReal = Math.max(bsaAdjusted * (1 - totalLoss * 0.65), 0.5);
+        const bsaReal = Math.max(bsaAdjusted - lostMassKg * 0.56, 0.5);
 
         const resultHtml = `
             <div class="result-item"><span class="result-label">📊 Сумарна втрата маси тіла:</span><span class="result-value">${(totalLoss*100).toFixed(2)}% (≈ ${lostMassKg.toFixed(1)} кг)</span></div>
