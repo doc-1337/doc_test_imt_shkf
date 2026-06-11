@@ -3,16 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Калькулятор ІМТ, площі тіла та ШКФ для ампутантів</title>
+    <title>Калькулятор ІМТ, площі тіла та ШКФ (CKD-EPI 2021) для ампутантів</title>
     <meta name="description" content="Калькулятор ІМТ, площі тіла та ШКФ (CKD-EPI 2021) для пацієнтів з ампутаціями кінцівок. Унікальна модифікація Osterkamp (2026). Розробник: Ігор Стельмащук.">
-    <!-- Підключення html2pdf -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; }
         body { background: #eef2f7; margin: 0; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); padding: 24px 28px; }
         h1 { font-size: 1.8rem; margin-top: 0; color: #1a3e60; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .badge { background: #1a3e60; color: white; font-size: 0.7rem; padding: 4px 12px; border-radius: 40px; }
         .sub { color: #2c6e9e; border-left: 4px solid #2c6e9e; padding-left: 16px; margin-bottom: 28px; font-weight: 500; }
         .grid-2 { display: flex; flex-wrap: wrap; gap: 24px; }
         .panel { flex: 1; min-width: 380px; background: #f9fbfd; border-radius: 20px; padding: 18px 20px; border: 1px solid #e2edf2; }
@@ -21,12 +18,10 @@
         label { display: block; font-weight: 600; margin-bottom: 6px; color: #1f3b4a; }
         input, select { width: 100%; padding: 10px 12px; border: 1px solid #bdd3e0; border-radius: 14px; font-size: 1rem; }
         input:focus { border-color: #2c6e9e; outline: none; box-shadow: 0 0 0 3px rgba(44,110,158,0.2); }
-        
         .radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
         .radio-group label { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #f8fafd; border: 1px solid #cfdfea; border-radius: 48px; padding: 10px 20px; font-weight: 500; font-size: 1rem; cursor: pointer; transition: all 0.2s; flex: 1; min-width: 100px; }
         .radio-group input[type="radio"] { width: 20px; height: 20px; margin: 0; accent-color: #267c4a; }
         @media (max-width: 550px) { .radio-group { flex-direction: column; } .radio-group label { justify-content: flex-start; padding: 12px 16px; } }
-
         .amputation-section { background: #ffffff; border-radius: 20px; padding: 12px 16px; margin-top: 12px; border: 1px solid #e0eef5; max-height: 600px; overflow-y: auto; }
         .limb-row { margin-bottom: 20px; border-bottom: 1px dashed #cce0ea; padding-bottom: 15px; }
         .limb-title { font-weight: 700; margin: 8px 0 10px 0; color: #1f5e8c; font-size: 1rem; }
@@ -47,38 +42,12 @@
         .info { background: #e8f4f8; border-left: 5px solid #2c6e9e; padding: 12px; border-radius: 16px; margin-top: 12px; font-size: 0.85rem; }
         footer { font-size: 0.7rem; text-align: center; margin-top: 28px; color: #5f7f9a; border-top: 1px solid #e0eef5; padding-top: 16px; }
         .developer { margin-top: 12px; font-size: 0.75rem; color: #2c6e9e; text-align: center; }
-        @media (max-width: 850px) { .container { padding: 16px; } .radio-option-group label { padding: 3px 6px; font-size: 0.7rem; } }
-        
-        /* Стилі для кнопки PDF та поля ПІБ */
         .pdf-panel { display: flex; gap: 10px; margin-top: 15px; align-items: center; flex-wrap: wrap; }
         #patientName { flex: 2; min-width: 200px; }
-        #pdfBtn { background: #5f7f9a; width: auto; padding: 10px 20px; margin-top: 0; }
-        
-        /* Стилі для друку (PDF) */
-        @media print {
-            body { background: white; padding: 0; margin: 0; }
-            .container { box-shadow: none; padding: 20px; max-width: 100%; }
-            button, .btn-secondary, #pdfBtn, #clearAmputationsBtn, #calcBtn, .radio-option-group, .limb-note, footer, .info { display: none; }
-            .results { display: block !important; border-left: none; padding: 0; margin-top: 0; }
-            .result-item { border-bottom: 1px solid #ccc; }
-            .sub, .panel h2, h1 { color: black; }
-            .panel { border: 1px solid #ccc; background: white; }
-            .total-loss { background: #f0f0f0; }
-        }
-        .pdf-protocol {
-            font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-            padding: 20px;
-            background: white;
-        }
-        .pdf-protocol h2 { color: #1a3e60; margin-bottom: 10px; }
-        .pdf-protocol .header { margin-bottom: 20px; border-bottom: 2px solid #1a3e60; padding-bottom: 10px; }
-        .pdf-protocol .patient-data { margin: 15px 0; padding: 10px; background: #f5f5f5; border-radius: 8px; }
-        .pdf-protocol .result-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        .pdf-protocol .result-table td, .pdf-protocol .result-table th { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .pdf-protocol .result-table th { background: #eef4fa; }
+        @media (max-width: 850px) { .container { padding: 16px; } .radio-option-group label { padding: 3px 6px; font-size: 0.7rem; } }
     </style>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#1f6e43">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#1f6e43">
 </head>
 <body>
 <div class="container">
@@ -185,12 +154,12 @@
         </div>
     </div>
 
-    <button id="calcBtn">📊 Розрахувати ІМТ, площу тіла та ШКФ</button>
-    
     <div class="pdf-panel">
         <input type="text" id="patientName" placeholder="ПІБ пацієнта (для протоколу)">
-        <button id="pdfBtn" style="background: #5f7f9a; width: auto; padding: 10px 20px;">📄 Зберегти результат у PDF</button>
+        <button id="pdfBtn" style="background: #5f7f9a; width: auto; padding: 10px 20px;">📄 Зберегти протокол (PDF)</button>
     </div>
+
+    <button id="calcBtn">📊 Розрахувати ІМТ, площу тіла та ШКФ</button>
 
     <div id="resultsArea" class="results">
         <h3 style="margin-top:0">🧾 Результати (згідно з методикою PATRIOT)</h3>
@@ -199,8 +168,11 @@
         <div class="info">
             ℹ️ Джерело: проєкт PATRIOT. Установи розробники: Національний військово-медичний клінічний центр «Головний військовий клінічний госпіталь» (НВМКЦ «ГВКГ»), Українська військово-медична академія (УВМА).<br>
             ▶ Коефіцієнти втрати маси тіла (кумулятивні) – унікальна модифікація (2026) методики L. K. Osterkamp (1995) з розподілом на третини.<br>
-            ▶ Коригування креатиніну, розрахунок ШКФ за скоригованим креатиніном, ІМТ та площі тіла – згідно з Sydorova N.M. et al. (2025).<br>
-            ▶ Коригований креатинін = креатинін + (втрачена маса в кг × 1.67 мкмоль/л)
+            ▶ Площа поверхні тіла (ППТ) розраховується за формулою Дюбуа: ППТ = 0,007184 × маса<sup>0,425</sup> × зріст<sup>0,725</sup>.<br>
+            ▶ Коригування креатиніну, розрахунок ШКФ за скоригованим креатиніном – згідно з Sydorova N.M. et al. (2025). Коригований креатинін = креатинін + (втрачена маса в кг × 1.67 мкмоль/л).<br>
+            ▶ <strong>Розрахунок реальної площі тіла:</strong> виконується за прямими відсотками площі поверхні, отриманими зі співвідношень рис. 2 статті: для ноги площа = маса × 1,125 (оскільки 18/16 = 1,125), для руки площа = маса × 1,8 (оскільки 9/5 = 1,8). Реальна площа тіла = скоригована площа Дюбуа × (1 – сумарний відсоток втрати площі).<br>
+            ▶ <strong>Наукова ремарка:</strong> ШКФ за цистатином С не залежить від м’язової маси. За наявності лабораторних можливостей рекомендовано валідувати розрахункову ШКФ шляхом визначення рівня цистатину С (CKD-EPI CysC).<br>
+            ▶ Розрахунок найбільш релевантний для гострого та підгострого періодів (до 6 місяців після ампутації). У віддаленому періоді можлива атрофія м'язів кукси або компенсаторна гіпертрофія збережених кінцівок.
         </div>
     </div>
     <footer>
@@ -214,160 +186,57 @@
 </div>
 
 <script>
-    function generatePDF() {
-    const resultsDiv = document.getElementById('resultsArea');
-    if (resultsDiv.style.display !== 'block') {
-        alert("Спочатку виконайте розрахунок (натисніть кнопку 'Розрахувати')!");
-        return;
+    // ============================================================
+    // КУМУЛЯТИВНІ ВІДСОТКИ ВТРАТИ МАСИ (унікальна модифікація Osterkamp, 2026)
+    // ============================================================
+    const massLossMap = {
+        foot: 0.015, calf_lower: 0.027, calf_middle: 0.042, calf_upper: 0.059,
+        thigh_lower: 0.087, thigh_middle: 0.120, thigh_upper: 0.148, wholeleg: 0.160,
+        hand: 0.007, forearm_lower: 0.010, forearm_middle: 0.015, forearm_upper: 0.023,
+        upperarm_lower: 0.030, upperarm_middle: 0.038, upperarm_upper: 0.047, wholearm: 0.050
+    };
+    
+    // Коефіцієнти перерахунку маси в площу згідно з рис. 2 статті:
+    // для ноги: площа (%) = маса (%) × 1.125 (оскільки 18/16 = 1.125)
+    // для руки: площа (%) = маса (%) × 1.8 (оскільки 9/5 = 1.8)
+    const limbFactor = {
+        leg: 1.125,
+        arm: 1.8
+    };
+    
+    // Визначення, до якої кінцівки належить сегмент
+    function getLimbType(segment) {
+        const legSegments = ['foot', 'calf_lower', 'calf_middle', 'calf_upper', 'thigh_lower', 'thigh_middle', 'thigh_upper', 'wholeleg'];
+        if (legSegments.includes(segment)) return 'leg';
+        return 'arm';
     }
-
-    const patientName = document.getElementById('patientName').value.trim();
-    const displayPatient = patientName ? patientName : '___________________';
-
-    const sex = document.querySelector('input[name="sex"]:checked').value === 'male' ? 'Чоловік' : 'Жінка';
-    const age = document.getElementById('age').value;
-    const height = document.getElementById('height').value;
-    const weight = document.getElementById('weight').value;
-    const creatinine = document.getElementById('creatinine').value;
-
-    const limbs = ['left_leg', 'right_leg', 'left_arm', 'right_arm'];
-    const limbNames = { 'left_leg': 'Ліва нога', 'right_leg': 'Права нога', 'left_arm': 'Ліва рука', 'right_arm': 'Права рука' };
-    let amputationsList = [];
-    for (let limb of limbs) {
-        const selected = document.querySelector(`input[name="${limb}"]:checked`);
-        let label = '';
-        if (selected && selected.value !== 'none') {
-            const parentLabel = selected.parentElement;
-            label = parentLabel.innerText.trim();
-        } else {
-            label = 'Збережена';
-        }
-        amputationsList.push(`${limbNames[limb]}: ${label}`);
-    }
-
-    const resultItems = document.querySelectorAll('#resultContent .result-item');
-    let resultsRows = '';
-    resultItems.forEach(item => {
-        const label = item.querySelector('.result-label').innerText;
-        const value = item.querySelector('.result-value').innerText;
-        resultsRows += `<tr><td style="border:1px solid #ddd; padding:8px;">${label}</td><td style="border:1px solid #ddd; padding:8px;">${value}</td></tr>`;
-    });
-
-    const currentDate = new Date().toLocaleDateString('uk-UA') + ' ' + new Date().toLocaleTimeString('uk-UA');
-
-    // Відкриваємо нове вікно для друку
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-        alert("Будь ласка, дозвольте спливаючі вікна для цього сайту, або скопіюйте результати вручну.");
-        return;
-    }
-
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Протокол розрахунку - калькулятор ампутацій</title>
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { font-family: system-ui, 'Segoe UI', Roboto, sans-serif; padding: 20px; }
-                .protocol { max-width: 100%; margin: 0 auto; }
-                .header { border-bottom: 2px solid #1a3e60; padding-bottom: 10px; margin-bottom: 20px; }
-                .header h2 { color: #1a3e60; margin-bottom: 5px; }
-                .patient-data { background: #f5f5f5; padding: 10px; border-radius: 8px; margin-bottom: 20px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                th { background: #eef4fa; }
-                .footer { margin-top: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #ccc; padding-top: 10px; }
-                @media print {
-                    body { padding: 0; }
-                    .no-print { display: none; }
-                }
-            </style>
-        </head>
-        <body>
-            <div class="protocol">
-                <div class="header">
-                    <h2>Калькулятор ІМТ, площі тіла та ШКФ (CKD-EPI 2021)</h2>
-                    <p>Для пацієнтів з ампутаціями кінцівок (НВМКЦ «ГВКГ», УВМА, Київ, Україна)</p>
-                    <p>Дата: ${currentDate}</p>
-                </div>
-                <div class="patient-data">
-                    <strong>Пацієнт(ка):</strong> ${displayPatient}<br>
-                    <strong>Стать:</strong> ${sex}<br>
-                    <strong>Вік:</strong> ${age} років<br>
-                    <strong>Зріст до ампутації:</strong> ${height} см<br>
-                    <strong>Поточна вага:</strong> ${weight} кг<br>
-                    <strong>Креатинін сироватки:</strong> ${creatinine} мкмоль/л
-                </div>
-                <div>
-                    <strong>Ампутовані сегменти:</strong><br>
-                    ${amputationsList.map(a => `- ${a}`).join('<br>')}
-                </div>
-                <div style="margin-top: 20px;">
-                    <strong>Результати розрахунку:</strong>
-                    <table>
-                        <thead><tr><th>Показник</th><th>Значення</th></tr></thead>
-                        <tbody>${resultsRows}</tbody>
-                    </table>
-                </div>
-                <div class="footer">
-                    Лікар: _________________________<br>
-                    Розробник онлайн-калькулятора: Ігор Стельмащук (doc-1337) 📧 smart47785@gmail.com
-                </div>
-            </div>
-            <script>
-                window.onload = function() { window.print(); setTimeout(() => { window.close(); }, 500); };
-            <\/script>
-        </body>
-        </html>
-    `);
-    printWindow.document.close();
-
-        
-        const element = document.createElement('div');
-        element.innerHTML = pdfContent;
-        element.style.position = 'absolute';
-        element.style.left = '-9999px';
-        document.body.appendChild(element);
-        
-        const patientNameForFile = patientName ? patientName.replace(/[^a-zA-Zа-яА-Яіїєґ]/g, '_') : 'невідомий';
-        html2pdf().from(element).set({
-            margin: [0.5, 0.5, 0.5, 0.5],
-            filename: `Калькулятор_ампутацій_${patientNameForFile}_${new Date().toISOString().slice(0,19)}.pdf`,
-            html2canvas: { scale: 2, letterRendering: true },
-            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-        }).save().then(() => {
-            document.body.removeChild(element);
-        }).catch(err => {
-            console.error('Помилка генерації PDF:', err);
-            alert('Сталася помилка при створенні PDF. Спробуйте ще раз.');
-            if (document.body.contains(element)) document.body.removeChild(element);
-        });
-    }
-
+    
+    // Функція для обчислення сумарної втрати маси та сумарної втрати площі (у відсотках, де 1 = 100%)
     function computeTotalLoss() {
-        let total = 0;
+        let totalMassLoss = 0;
+        let totalAreaLoss = 0;
         const limbs = ['left_leg', 'right_leg', 'left_arm', 'right_arm'];
         for (let limb of limbs) {
             const selected = document.querySelector(`input[name="${limb}"]:checked`);
             if (selected && selected.value !== 'none') {
-                total += parseFloat(selected.value);
+                const segValue = parseFloat(selected.value);
+                totalMassLoss += segValue;
+                // Визначаємо, до якої кінцівки належить вибраний рівень (за назвою групи)
+                let factor = (limb.includes('leg')) ? limbFactor.leg : limbFactor.arm;
+                totalAreaLoss += segValue * factor;
             }
         }
-        return Math.min(total, 0.95);
+        totalMassLoss = Math.min(totalMassLoss, 0.95);
+        totalAreaLoss = Math.min(totalAreaLoss, 0.95);
+        return { totalMassLoss, totalAreaLoss };
     }
-
-    function computeLostMassKg(currentWeight, totalLossFraction) {
-        if (totalLossFraction >= 0.95) return currentWeight * 10;
-        const adjustedWeight = currentWeight / (1 - totalLossFraction);
-        return adjustedWeight - currentWeight;
-    }
-
+    
+    // Функція розрахунку площі поверхні тіла за Дюбуа
     function bodySurfaceArea(weightKg, heightCm) {
         return 0.007184 * Math.pow(weightKg, 0.425) * Math.pow(heightCm, 0.725);
     }
-
+    
+    // Функція розрахунку ШКФ за CKD-EPI 2021
     function ckdEpi2021(sex, age, creatinineUmoll) {
         const creatinineMgdl = creatinineUmoll / 88.4;
         let kappa, alpha;
@@ -379,12 +248,13 @@
         if (sex === 'female') egfr *= 1.012;
         return egfr;
     }
-
+    
+    // Оновлення відображення сумарної втрати маси
     function updateTotalLossDisplay() {
-        let loss = computeTotalLoss();
-        let percent = (loss * 100).toFixed(2);
+        const { totalMassLoss } = computeTotalLoss();
+        let percent = (totalMassLoss * 100).toFixed(2);
         document.getElementById('totalLossDisplay').innerHTML = `📉 Сумарна втрата маси: ${percent}%`;
-        if (loss >= 0.5) {
+        if (totalMassLoss >= 0.5) {
             document.getElementById('totalLossDisplay').style.background = "#f8d7da";
             document.getElementById('totalLossDisplay').style.color = "#721c24";
         } else {
@@ -392,7 +262,8 @@
             document.getElementById('totalLossDisplay').style.color = "#1a3e60";
         }
     }
-
+    
+    // Скидання всіх ампутацій
     function clearAllAmputations() {
         const limbs = ['left_leg', 'right_leg', 'left_arm', 'right_arm'];
         for (let limb of limbs) {
@@ -401,26 +272,84 @@
         }
         updateTotalLossDisplay();
     }
-
+    
+    // Генерація PDF (через друк)
+    function generatePDF() {
+        const resultsDiv = document.getElementById('resultsArea');
+        if (resultsDiv.style.display !== 'block') {
+            alert("Спочатку виконайте розрахунок!");
+            return;
+        }
+        const patientName = document.getElementById('patientName').value.trim() || '___________________';
+        const sex = document.querySelector('input[name="sex"]:checked').value === 'male' ? 'Чоловік' : 'Жінка';
+        const age = document.getElementById('age').value;
+        const height = document.getElementById('height').value;
+        const weight = document.getElementById('weight').value;
+        const creatinine = document.getElementById('creatinine').value;
+        
+        const limbs = ['left_leg', 'right_leg', 'left_arm', 'right_arm'];
+        const limbNames = {'left_leg': 'Ліва нога', 'right_leg': 'Права нога', 'left_arm': 'Ліва рука', 'right_arm': 'Права рука'};
+        let amputationsList = [];
+        for (let limb of limbs) {
+            const selected = document.querySelector(`input[name="${limb}"]:checked`);
+            let label = selected && selected.value !== 'none' ? selected.parentElement.innerText.trim() : 'Збережена';
+            amputationsList.push(`${limbNames[limb]}: ${label}`);
+        }
+        
+        const resultItems = document.querySelectorAll('#resultContent .result-item');
+        let resultsRows = '';
+        resultItems.forEach(item => {
+            const label = item.querySelector('.result-label').innerText;
+            const value = item.querySelector('.result-value').innerText;
+            resultsRows += `<tr><td style="border:1px solid #ddd; padding:8px;">${label}</td><td style="border:1px solid #ddd; padding:8px;">${value}</td></tr>`;
+        });
+        
+        const currentDate = new Date().toLocaleDateString('uk-UA') + ' ' + new Date().toLocaleTimeString('uk-UA');
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) { alert("Дозвольте спливаючі вікна"); return; }
+        printWindow.document.write(`
+            <!DOCTYPE html><html><head><meta charset="UTF-8"><title>Протокол розрахунку</title>
+            <style>body{font-family:system-ui;padding:20px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:8px;text-align:left;} th{background:#eef4fa;}</style>
+            </head><body>
+            <h2>Калькулятор ІМТ, площі тіла та ШКФ (CKD-EPI 2021)</h2>
+            <p>Дата: ${currentDate}</p>
+            <p><strong>Пацієнт(ка):</strong> ${patientName}</p>
+            <p><strong>Стать:</strong> ${sex} | <strong>Вік:</strong> ${age} р. | <strong>Зріст до ампутації:</strong> ${height} см | <strong>Поточна вага:</strong> ${weight} кг | <strong>Креатинін:</strong> ${creatinine} мкмоль/л</p>
+            <p><strong>Ампутовані сегменти:</strong><br>${amputationsList.join('<br>')}</p>
+            <h3>Результати</h3>
+            <table><thead><tr><th>Показник</th><th>Значення</th></tr></thead><tbody>${resultsRows}</tbody></table>
+            <p><strong>Розрахунок реальної площі тіла виконано за прямими відсотками площі (рис. 2 статті):</strong><br>
+            - Для ноги: площа = маса × 1,125 (18/16)<br>
+            - Для руки: площа = маса × 1,8 (9/5)</p>
+            <p>Лікар: _________________________</p>
+            <p style="font-size:0.8rem;">Розробник: Ігор Стельмащук (doc-1337) 📧 smart47785@gmail.com</p>
+            <script>window.onload=function(){window.print();setTimeout(()=>window.close(),500);};<\/script>
+            </body></html>
+        `);
+        printWindow.document.close();
+    }
+    
+    // Основний розрахунок
     function calculate() {
         const sex = document.querySelector('input[name="sex"]:checked').value;
         const age = parseFloat(document.getElementById('age').value);
         const heightCm = parseFloat(document.getElementById('height').value);
         const currentWeight = parseFloat(document.getElementById('weight').value);
         const creatinine = parseFloat(document.getElementById('creatinine').value);
-
+        
         if (isNaN(age) || age < 18) { alert("Вік має бути ≥ 18 років"); return; }
         if (isNaN(heightCm) || heightCm < 100) { alert("Введіть коректний зріст"); return; }
         if (isNaN(currentWeight) || currentWeight <= 0) { alert("Введіть поточну вагу"); return; }
         if (isNaN(creatinine) || creatinine <= 0) { alert("Введіть рівень креатиніну"); return; }
-
-        const totalLoss = computeTotalLoss();
-        if (totalLoss >= 0.95) {
+        
+        const { totalMassLoss, totalAreaLoss } = computeTotalLoss();
+        if (totalMassLoss >= 0.95) {
             alert("Сумарна частка втрати маси перевищує 95% – перевірте вибір ампутацій");
             return;
         }
-
-        const adjustedWeight = currentWeight / (1 - totalLoss);
+        
+        // Скоригована маса
+        const adjustedWeight = currentWeight / (1 - totalMassLoss);
         const heightM = heightCm / 100;
         const bmi = adjustedWeight / (heightM * heightM);
         let bmiCat = "";
@@ -430,9 +359,9 @@
         else if (bmi < 35) bmiCat = "Ожиріння І ступеня";
         else if (bmi < 40) bmiCat = "Ожиріння ІІ ступеня";
         else bmiCat = "Ожиріння ІІІ ступеня";
-
-        const lostMassKg = computeLostMassKg(currentWeight, totalLoss);
-        const adjustedCreatinine = creatinine + (lostMassKg * 1.67);
+        
+        const lostMassTotal = adjustedWeight - currentWeight;
+        const adjustedCreatinine = creatinine + (lostMassTotal * 1.67);
         const egfrCkdEpi = ckdEpi2021(sex, age, adjustedCreatinine);
         
         let stage = "";
@@ -442,13 +371,13 @@
         else if (egfrCkdEpi >= 30) stage = "3b (помірне-виражене)";
         else if (egfrCkdEpi >= 15) stage = "4 (тяжке зниження)";
         else stage = "5 (термінальна)";
-
+        
         const bsaAdjusted = bodySurfaceArea(adjustedWeight, heightCm);
-        // Реальна площа тіла за методикою зі статті (коефіцієнт 0.65 усереднений)
-        const bsaReal = Math.max(bsaAdjusted * (1 - totalLoss * 0.65), 0.5);
-
+        // Реальна площа тіла з урахуванням втрати площі (totalAreaLoss – частка, тому віднімаємо)
+        const bsaReal = Math.max(bsaAdjusted * (1 - totalAreaLoss), 0.5);
+        
         const resultHtml = `
-            <div class="result-item"><span class="result-label">📊 Сумарна втрата маси тіла:</span><span class="result-value">${(totalLoss*100).toFixed(2)}% (≈ ${lostMassKg.toFixed(1)} кг)</span></div>
+            <div class="result-item"><span class="result-label">📊 Сумарна втрата маси тіла:</span><span class="result-value">${(totalMassLoss*100).toFixed(2)}% (≈ ${lostMassTotal.toFixed(1)} кг)</span></div>
             <div class="result-item"><span class="result-label">⚖️ Скоригована маса тіла (без ампутацій):</span><span class="result-value">${adjustedWeight.toFixed(1)} кг</span></div>
             <div class="result-item"><span class="result-label">📐 Індекс маси тіла (ІМТ) скоригований:</span><span class="result-value">${bmi.toFixed(1)} кг/м² — ${bmiCat}</span></div>
             <div class="result-item"><span class="result-label">🧪 Креатинін виміряний:</span><span class="result-value">${creatinine.toFixed(1)} мкмоль/л</span></div>
@@ -471,7 +400,7 @@
         document.getElementById('resultsArea').style.display = "block";
         document.getElementById('resultsArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-
+    
     document.addEventListener('DOMContentLoaded', () => {
         const radios = document.querySelectorAll('input[type="radio"]');
         radios.forEach(radio => radio.addEventListener('change', updateTotalLossDisplay));
