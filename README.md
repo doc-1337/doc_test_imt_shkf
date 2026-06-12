@@ -36,4 +36,4 @@
 
 Якщо ви використовуєте цей калькулятор у вашому дослідженні, будь ласка, цитуйте його за DOI:
 
-[![DOI](https://doi.org/10.5281/zenodo.20386871.svg)](https://doi.org/10.5281/zenodo.20386871)
+[![DOI](https://zenodo.org/badge/1236875447.svg)](https://doi.org/10.5281/zenodo.20386871)
