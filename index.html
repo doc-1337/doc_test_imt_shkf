@@ -171,14 +171,15 @@
             ▶ Коефіцієнти втрати маси тіла (кумулятивні) – унікальна модифікація (2026) методики L. K. Osterkamp (1995) з розподілом на третини.<br>
             ▶ Площа поверхні тіла (ППТ) розраховується за формулою Дюбуа: ППТ = 0,007184 × маса<sup>0,425</sup> × зріст<sup>0,725</sup>.<br>
             ▶ Коригування креатиніну, розрахунок ШКФ за скоригованим креатиніном – згідно з Sydorova N.M. et al. (2025). Коригований креатинін = креатинін + (втрачена маса в кг × 1.67 мкмоль/л).<br>
-            ▶ <strong>Розрахунок реальної площі тіла:</strong> виконується за прямими відсотками площі поверхні, отриманими зі співвідношень рис. 2 статті: для ноги площа = маса × 1,125 (оскільки 18/16 = 1,125), для руки площа = маса × 1,8 (оскільки 9/5 = 1,8). Реальна площа тіла = скоригована площа Дюбуа × (1 – сумарний відсоток втрати площі).<br>
-            ▶ <strong>Наукова ремарка:</strong> ШКФ за цистатином С не залежить від м’язової маси. За наявності лабораторних можливостей рекомендовано валідувати розрахункову ШКФ шляхом визначення рівня цистатину С (CKD-EPI CysC).<br>
-            ▶ Розрахунок найбільш релевантний для гострого та підгострого періодів (до 6 місяців після ампутації). У віддаленому періоді можлива атрофія м'язів кукси або компенсаторна гіпертрофія збережених кінцівок.
+            ▶ <strong>Розрахунок реальної площі тіла (ПТ):</strong> від розрахованої за показниками без ампутації ПТ (застосувавши для розрахунку показники: зріст до ампутації, маса тіла після ампутації, тобто актуальна, плюс маса втраченої кінцівки) необхідно відняти показник втраченої частини ПТ залежно від рівня ампутації. % втрати ПТ вираховували, поєднавши методику L. K. Osterkamp (1995) та «правило дев'яток» для розрахунку ПТ, ураженої опіками, за коефіцієнтами приведення: для ноги відсоток втраченої ПТ = % втраченої маси тіла × 1,125 (ПТ всієї ноги 18% / маса всієї ноги 16% = 1,125), для руки відсоток втраченої ПТ = % втраченої маси тіла × 1,8 (ПТ всієї руки 9% / маса всієї руки 5% = 1,8). Реальна площа тіла = площа Дюбуа для маси тіла без ампутації – сумарний відсоток втрати площі.<br>
+            ▶ <strong>Наукова ремарка:</strong> Розрахунок ШКФ за цистатином С не залежить від м'язової маси, але рівень цистатину С залежить від системних запальних процесів, куріння тощо. За наявності лабораторних можливостей можна визначати ШКФ шляхом визначення рівня цистатину С (CKD-EPI цистатин C), або формули, що враховує коригований креатинін та цистатин С (CKD-EPI цистатин С + креатинін).<br>
+            ▶ Розрахунок найбільш релевантний для гострого та підгострого періодів (до 6 місяців після ампутації). У віддаленому періоді варто враховувати можливу атрофію м'язів кукси та/або компенсаторну гіпертрофію збережених кінцівок.
         </div>
     </div>
     <footer>
         ⚕️ Сидорова Н. М., Царалунга В. М., Семенець О. Л. та ін. Сучасні аспекти військової медицини. 2025;32(1):129–144. <a href="https://doi.org/10.32751/2310-4910-2025-32-1-11" target="_blank">DOI</a><br>
-        Osterkamp L. K. J Am Diet Assoc. 1995;95(2):215–218. <a href="https://doi.org/10.1016/S0002-8223(95)00050-X" target="_blank">DOI</a>
+        Osterkamp L. K. J Am Diet Assoc. 1995;95(2):215–218. <a href="https://doi.org/10.1016/S0002-8223(95)00050-X" target="_blank">DOI</a><br>
+        <a href="https://www.dec.gov.ua/wp-content/uploads/2023/10/2023_kn_opiky_.pdf" target="_blank">Правило дев'яток (опіки). Клінічна настанова МОЗ України, 2023</a>
         <div class="developer">
             👨‍💻 Розробник онлайн-калькулятора: <strong>Ігор Стельмащук (doc-1337) <a href="https://doi.org/10.5281/zenodo.20386871" target="_blank">DOI</a></strong><br>
             📧 smart47785@gmail.com
@@ -197,20 +198,11 @@
         upperarm_lower: 0.030, upperarm_middle: 0.038, upperarm_upper: 0.047, wholearm: 0.050
     };
     
-    // Коефіцієнти перерахунку маси в площу згідно з рис. 2 статті:
-    // для ноги: площа (%) = маса (%) × 1.125 (оскільки 18/16 = 1.125)
-    // для руки: площа (%) = маса (%) × 1.8 (оскільки 9/5 = 1.8)
+    // Коефіцієнти перерахунку маси в площу (правило дев'яток + Osterkamp)
     const limbFactor = {
-        leg: 1.125,
-        arm: 1.8
+        leg: 1.125,  // 18% ПТ / 16% маси = 1,125
+        arm: 1.8     // 9% ПТ / 5% маси = 1,8
     };
-    
-    // Визначення, до якої кінцівки належить сегмент
-    function getLimbType(segment) {
-        const legSegments = ['foot', 'calf_lower', 'calf_middle', 'calf_upper', 'thigh_lower', 'thigh_middle', 'thigh_upper', 'wholeleg'];
-        if (legSegments.includes(segment)) return 'leg';
-        return 'arm';
-    }
     
     // Функція для обчислення сумарної втрати маси та сумарної втрати площі (у відсотках, де 1 = 100%)
     function computeTotalLoss() {
@@ -222,7 +214,6 @@
             if (selected && selected.value !== 'none') {
                 const segValue = parseFloat(selected.value);
                 totalMassLoss += segValue;
-                // Визначаємо, до якої кінцівки належить вибраний рівень (за назвою групи)
                 let factor = (limb.includes('leg')) ? limbFactor.leg : limbFactor.arm;
                 totalAreaLoss += segValue * factor;
             }
@@ -232,12 +223,10 @@
         return { totalMassLoss, totalAreaLoss };
     }
     
-    // Функція розрахунку площі поверхні тіла за Дюбуа
     function bodySurfaceArea(weightKg, heightCm) {
         return 0.007184 * Math.pow(weightKg, 0.425) * Math.pow(heightCm, 0.725);
     }
     
-    // Функція розрахунку ШКФ за CKD-EPI 2021
     function ckdEpi2021(sex, age, creatinineUmoll) {
         const creatinineMgdl = creatinineUmoll / 88.4;
         let kappa, alpha;
@@ -250,7 +239,6 @@
         return egfr;
     }
     
-    // Оновлення відображення сумарної втрати маси
     function updateTotalLossDisplay() {
         const { totalMassLoss } = computeTotalLoss();
         let percent = (totalMassLoss * 100).toFixed(2);
@@ -264,7 +252,6 @@
         }
     }
     
-    // Скидання всіх ампутацій
     function clearAllAmputations() {
         const limbs = ['left_leg', 'right_leg', 'left_arm', 'right_arm'];
         for (let limb of limbs) {
@@ -274,7 +261,6 @@
         updateTotalLossDisplay();
     }
     
-    // Генерація PDF (через друк)
     function generatePDF() {
         const resultsDiv = document.getElementById('resultsArea');
         if (resultsDiv.style.display !== 'block') {
@@ -319,9 +305,7 @@
             <p><strong>Ампутовані сегменти:</strong><br>${amputationsList.join('<br>')}</p>
             <h3>Результати</h3>
             <table><thead><tr><th>Показник</th><th>Значення</th></tr></thead><tbody>${resultsRows}</tbody></table>
-            <p><strong>Розрахунок реальної площі тіла виконано за прямими відсотками площі (рис. 2 статті):</strong><br>
-            - Для ноги: площа = маса × 1,125 (18/16)<br>
-            - Для руки: площа = маса × 1,8 (9/5)</p>
+            <p><strong>Розрахунок реальної площі тіла:</strong> за коефіцієнтами приведення: для ноги 1,125 (18/16), для руки 1,8 (9/5).</p>
             <p>Лікар: _________________________</p>
             <p style="font-size:0.8rem;">Розробник: Ігор Стельмащук (doc-1337) 📧 smart47785@gmail.com</p>
             <script>window.onload=function(){window.print();setTimeout(()=>window.close(),500);};<\/script>
@@ -330,7 +314,6 @@
         printWindow.document.close();
     }
     
-    // Основний розрахунок
     function calculate() {
         const sex = document.querySelector('input[name="sex"]:checked').value;
         const age = parseFloat(document.getElementById('age').value);
@@ -349,7 +332,6 @@
             return;
         }
         
-        // Скоригована маса
         const adjustedWeight = currentWeight / (1 - totalMassLoss);
         const heightM = heightCm / 100;
         const bmi = adjustedWeight / (heightM * heightM);
@@ -374,7 +356,6 @@
         else stage = "5 (термінальна)";
         
         const bsaAdjusted = bodySurfaceArea(adjustedWeight, heightCm);
-        // Реальна площа тіла з урахуванням втрати площі (totalAreaLoss – частка, тому віднімаємо)
         const bsaReal = Math.max(bsaAdjusted * (1 - totalAreaLoss), 0.5);
         
         const resultHtml = `
